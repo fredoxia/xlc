@@ -13,13 +13,7 @@ $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 });
 function save(){
-	if ($("#yearId").combobox("getValue") == "" || $("#yearId").combobox("getValue")== "0")
-		$.messager.alert('失败信息', "年份不能为空",'error');
-	else if ($("#quarter_ID").combobox("getValue") == "" || $("#quarter_ID").combobox("getValue") == "0")
-		$.messager.alert('失败信息', "季度不能为空",'error');
-	else if ($("#brand_ID").val() == "" || $("#brand_ID").val() == "0")
-		$.messager.alert('失败信息', "品牌不能为空",'error');
-	else if ($("#inventory").val() == "")
+	if ($("#inventory").val() == "")
 		$.messager.alert('失败信息', "批量增加条码文件不能为空",'error');
 	else {
 		$.messager.progress({
@@ -43,19 +37,14 @@ function save(){
 			 	       <tr class="PBAOuterTableTitale" align="left">
 	          				<th colspan="4">批量导入条码信息 <br/>
 	          				- 请按照格式导入,任何一个错误条码都将导致所有新增条码失败
+	          				- 请直接从千禧宝贝系统导出条码
 	          				</th>
 	       				</tr>
-	       					<tr class="InnerTableContent">
-					         <td width="10%" height="40">年份</td>
-					         <td width="30%"><s:select name="formBean.productBarcode.product.year.year_ID" cssClass="easyui-combobox" data-options="editable:false"  style="width:80px;"  size="1" id="yearId"  list="uiBean.basicData.yearList" listKey="year_ID" listValue="year"  /></td>
-					         <td width="10%">季度</td>
-					         <td width="50%"><s:select name="formBean.productBarcode.product.quarter.quarter_ID" cssClass="easyui-combobox" data-options="editable:false"  style="width:80px;"  size="1" id="quarter_ID" list="uiBean.basicData.quarterList" listKey="quarter_ID" listValue="quarter_Name"  /></td>
-				           </tr>
 				           <tr class="InnerTableContent">
-				           	 <td height="40">品牌</td>
-					         <td><%@ include file="SearchBrandStub.jsp"%></td>
 					         <td>条码文件</td>
 					         <td><input type="file" name="formBean.inventory" id="inventory"/></td>
+					         <td height="40"></td>
+					         <td></td>
 				           </tr>
 						   <tr class="InnerTableContent">
 						    <td height="25" align='left'>&nbsp;</td>

@@ -10,9 +10,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Color2;
 import org.apache.catalina.User;
-import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.beans.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
@@ -30,6 +35,9 @@ import com.onlineMIS.ORM.DAO.headQ.inventory.HeadQInventoryStockDAOImpl;
 import com.onlineMIS.ORM.DAO.headQ.supplier.finance.SupplierAcctFlowDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.supplier.supplierMgmt.HeadQSupplierDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforDaoImpl;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQInventoryStock;
@@ -38,6 +46,9 @@ import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistory;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistoryId;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderVO;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Color2;
 import com.onlineMIS.ORM.entity.headQ.supplier.finance.SupplierAcctFlow;
 import com.onlineMIS.ORM.entity.headQ.supplier.purchase.HeadqPurchaseHistory;
 import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrder;
@@ -49,12 +60,27 @@ import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.action.headQ.supplier.purchase.SupplierPurchaseActionFormBean;
 import com.onlineMIS.action.headQ.supplier.purchase.SupplierPurchaseActionUIBean;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.filter.SystemParm;
 
 
 @Service
 public class SupplierPurchaseService {
- 
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl brandDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.BrandDaoImpl2 brandDaoImpl2;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.CategoryDaoImpl categoryDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.CategoryDaoImpl2 categoryDaoImpl2;	
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ColorDaoImpl colorDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ColorDaoImpl2 colorDaoImpl2;	
+
+
+	
 	@Autowired
 	private PurchaseOrderDaoImpl purchaseOrderDaoImpl;
 	@Autowired
@@ -75,6 +101,7 @@ public class SupplierPurchaseService {
 	
 	@Autowired
 	private HeadqPurchaseHistoryDaoImpl headqPurchaseHistoryDaoImpl;
+
 	/**
 	 * 获取单据信息
 	 * Action 1: edit; 2 : view
@@ -167,9 +194,9 @@ public class SupplierPurchaseService {
 	@Transactional
 	public Response savePurchaseOrderToDraft(PurchaseOrder order, UserInfor loginUser){
 		Response response = new Response();
-		
+
 		try {
-		
+	
 			if (!validatePurchaseOrder(order).isSuccess()){
 				return response;
 			}
@@ -247,6 +274,9 @@ public class SupplierPurchaseService {
 					
 			//3. 计算库存
 			updateHeadqInventory(order, false);
+			
+			//4.更新最新成本
+			updateRecCost(order);
 		} else {
 			PurchaseOrderProductDaoImpl.removeItems(order.getId());
 			PurchaseOrder orderOriginal = purchaseOrderDaoImpl.get(order.getId(), true);
@@ -268,12 +298,42 @@ public class SupplierPurchaseService {
 					
 			//3. 计算库存
 			updateHeadqInventory(orderOriginal, false);
+			
+			//4.更新最新成本
+			updateRecCost(orderOriginal);
 		}
 
 		
 		return response;
 	}
 	
+	/**
+	 * 更新最新的成本到基础资料
+	 * @param order
+	 */
+	private void updateRecCost(PurchaseOrder order) {
+		//如果是测试连锁店不需要
+		int TEST_SUPPLIER_ID = SystemParm.getTestSupplierId();
+		int supplierId = order.getSupplier().getId();
+		if (supplierId == TEST_SUPPLIER_ID)
+			return;
+		
+		Iterator<PurchaseOrderProduct> orderProducts = order.getProductSet().iterator();
+		 while (orderProducts.hasNext()){
+			 PurchaseOrderProduct orderProduct = orderProducts.next();
+			 int pbId = orderProduct.getPb().getId();
+			 double cost = orderProduct.getRecCost();
+
+			 ProductBarcode pb = ProductBarcodeDaoImpl.get(pbId, true);
+			 
+			 Product product = pb.getProduct();
+			 product.setRecCost(cost);
+			 product.setRecCost2(cost);
+			 
+			 ProductDaoImpl.save(product, true);
+		 }
+	}
+
 	/**
 	 * @tobecheck
 	 * 红虫purchase order过账

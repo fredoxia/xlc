@@ -328,7 +328,7 @@ public class ProductJSPAction extends ProductAction {
 		
 		Response response = new Response();
 		try {
-		   response = productService.batchInsertBarcode(formBean.getInventory(), formBean.getProductBarcode().getProduct());
+		   response = productService.batchInsertBarcode(formBean.getInventory());
 		} catch (Exception e){
 			response.setFail("保存条码出现错误  : " + e.getMessage());
 			

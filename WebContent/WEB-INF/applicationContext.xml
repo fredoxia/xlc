@@ -34,16 +34,16 @@
         <property name="validationInterval" value="30000"/>  
         <property name="validationQuery" value="SELECT 1"/>   
         <property name="timeBetweenEvictionRunsMillis" value="5000"/>   
-        <property name="maxActive" value="20"/>   
+        <property name="maxActive" value="10"/>   
         <property name="initialSize" value="5"/>    
         <property name="minIdle" value="10"/>     
         <property name="logAbandoned" value="false"/>   
         <property name="removeAbandoned" value="false"/>   
  
         <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
-    </bean>    
- 
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    </bean>  
+    
+      <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 	    <property name="dataSource" ref="dataSource"/>
 	    
 	    <property name="mappingResources">
@@ -83,8 +83,48 @@
 		 </props>
 		</property>
    </bean>
-
+    
+	<!-- MySQL2 DataSource Property -->
+	<bean id="dataSource2" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+		<property name="driverClassName" value="${mysql.jdbc.driverClassName}"/>
+		<property name="url" value="${mysql2.jdbc.url}"/>
+		<property name="username" value="${mysql2.jdbc.username}"/>
+		<property name="password" value="${mysql2.jdbc.password}"/> 
+         <property name="testOnBorrow" value="true"/> 
+         <property name="testWhileIdle" value="false"/> 
+        <property name="validationInterval" value="30000"/>  
+        <property name="validationQuery" value="SELECT 1"/>   
+        <property name="timeBetweenEvictionRunsMillis" value="5000"/>   
+        <property name="maxActive" value="2"/>   
+        <property name="logAbandoned" value="false"/>   
+        <property name="removeAbandoned" value="false"/>   
+        <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>   
+    </bean>         
  
+  
+    <bean id="sessionFactory2" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	    <property name="dataSource" ref="dataSource2"/>
+	    
+	    <property name="mappingResources">
+	     <list>
+	             <value>com/onlineMIS/ORM/headQ/qxbabydb.hbm.xml</value>
+	     </list>
+        </property>
+	    <property name="hibernateProperties">
+		 <props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+			<prop key="hibernate.show_sql">true</prop>
+			<prop key="hibernate.generate_statistics">true</prop>
+			<prop key="hibernate.connection.release_mode">auto</prop>
+			<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop> 
+            <prop key="hibernate.cache.use_query_cache">true</prop>
+            <prop key="hibernate.cache.use_second_level_cache">true</prop>  
+			<prop key="hibernate.autoReconnect">true</prop>
+			<prop key="hibernate.max_fetch_depth">4</prop>
+			<prop key="hibernate.jdbc.batch_size">20</prop>		
+		 </props>
+		</property>
+   </bean> 
        
    <!-- transaction management -->
    <bean id="txManager"  class="org.springframework.orm.hibernate3.HibernateTransactionManager">
@@ -108,8 +148,20 @@
    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
          <property name="sessionFactory" ref="sessionFactory"/>  
    </bean>
+   <bean id="hibernateTemplate2" class="org.springframework.orm.hibernate3.HibernateTemplate">
+         <property name="sessionFactory" ref="sessionFactory2"/>  
+   </bean>   
 
    <!-- 一些batch job -->
+   <!-- 更新新加的brand job -->
+   <bean id="hourlyBasicBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
+   		 p:targetObject-ref="headqBatchRptService"
+   		 p:targetMethod="runHourlyBasicImport"
+   		 p:concurrent="false"/>
+   <bean id="hourlyBasicBatchTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+   		 p:jobDetail-ref="hourlyBasicBatchJob"
+   		 p:cronExpression="0 0 9,10,11,12,13,14,15,16,17,18,19,20 * * ?"/>
+   		 
    <!-- daily sales batch job -->
    <bean id="dailySalesBatchJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"
    		 p:targetObject-ref="chainDailySalesService"
@@ -223,6 +275,7 @@
    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
    		 <property name="triggers">
    		 	<list>
+   		 	    <ref bean="hourlyBasicBatchTrigger"/>
    		 		<ref bean="dailySalesBatchTrigger"/>
    		 		<ref bean="weeklyRankBatchTrigger"/>
     		

@@ -216,7 +216,7 @@ $(document).ready(function(){
 	            </tr>
 				<tr height="10" class="InnerTableContent" >
 				  	 <td align ="center">备注</td>
-					 <td colspan="2"><input name="formBean.order.comment" id="comment" class="easyui-textbox"  style="width:500px" value="<s:property value="uiBean.order.comment"/>"><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="updateOrderComment();">修改备注</a></td>			 					 				 					 		
+					 <td colspan="2"><input name="formBean.order.comment" id="comment" class="easyui-textbox"  style="width:500px" value="<s:property value="formBean.order.comment"/>"><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="updateOrderComment();">修改备注</a></td>			 					 				 					 		
 				</tr>
                 <tr class="InnerTableContent">
                   <td width="5%" height="27" align="center">优惠</td>

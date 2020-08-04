@@ -78,6 +78,13 @@ public class Category  implements Serializable{
 	public void setCategory_Code(String category_Code) {
 		this.category_Code = category_Code;
 	}
+
+	@Override
+	public String toString() {
+		return "Category [category_ID=" + category_ID + ", category_Name="
+				+ category_Name + ", category_Code=" + category_Code
+				+ ", chainId=" + chainId + "]";
+	}
      
      
 }

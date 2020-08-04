@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.onlineMIS.ORM.entity.headQ.qxbabydb">
+    
+    <class name="Brand2" table="brand">
+
+        <id name="brand_ID" column="brand_ID">
+            <generator class="identity" />
+        </id>
+        <property name="brand_Name" column="brand_name" type="string"/>
+        <property name="brand_Code" column="brand_Code" type="string"/>
+        <property name="supplier" column="supplier" type="string"/>
+        <property name="pinyin" column="pin_yin" type="string"/>
+        <property name="chain_id" column="chain_id" type="integer"/>
+    </class>
+    
+    <class name="Category2" table="category">
+ 
+        <id name="category_ID" column="category_ID">
+            <generator class="identity" />
+        </id>
+        <property name="category_Name" column="category_Name" type="string"/>
+        <property name="category_Code" column="category_Code" type="string"/>
+        <property name="chainId" column="chain_id" type="integer"/>
+        <!--  <property name="hide" column="hide" type="integer"/>
+        <property name="material" column="material" type="string"/>
+        <property name="filler" column="filler" type="string"/>-->
+        
+    </class>
+    
+    <class name="Color2" table="color">
+
+        <id name="colorId" column="color_id">
+            <generator class="assigned" />
+        </id>
+        <property name="code" column="code" type="string"/>
+        <property name="name" column="name" type="string"/>
+        <property name="deleted" column="deleted" type="integer"/>
+    </class>
+</hibernate-mapping>

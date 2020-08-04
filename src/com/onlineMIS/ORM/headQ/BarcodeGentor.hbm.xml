@@ -14,7 +14,7 @@
     <class name="Brand" table="brand">
         <cache usage="read-write" region="qxbabyConstant"/>
         <id name="brand_ID" column="brand_ID">
-            <generator class="identity" />
+            <generator class="assigned" />
         </id>
         <property name="brand_Name" column="brand_name" type="string"/>
         <property name="brand_Code" column="brand_Code" type="string"/>
@@ -26,14 +26,14 @@
     <class name="Category" table="category">
         <cache usage="read-write" region="qxbabyConstant"/>
         <id name="category_ID" column="category_ID">
-            <generator class="identity" />
+            <generator class="assigned" />
         </id>
         <property name="category_Name" column="category_Name" type="string"/>
         <property name="category_Code" column="category_Code" type="string"/>
         <property name="chainId" column="chain_id" type="integer"/>
-        <property name="hide" column="hide" type="integer"/>
+        <!--  <property name="hide" column="hide" type="integer"/>
         <property name="material" column="material" type="string"/>
-        <property name="filler" column="filler" type="string"/>
+        <property name="filler" column="filler" type="string"/>-->
         
     </class>
     
@@ -95,17 +95,17 @@
         <property name="wholeSalePrice2" column="whole_sale_price2" type="double"/>
         <property name="wholeSalePrice3" column="whole_sale_price3" type="double"/>
         <property name="recCost" column="rec_cost" type="double"/>
-        <property name="recCost2" column="rec_cost2" type="double"/>
+        <!-- <property name="recCost2" column="rec_cost2" type="double"/> -->
         <many-to-one name="chainStore" fetch="select" column="chain_id" class="com.onlineMIS.ORM.entity.chainS.user.ChainStore" not-null="false" lazy="false"/>
         <many-to-one name="area" column="area_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Area" lazy="false"/>
         <many-to-one name="year" column="year_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year" lazy="false"/>
         <many-to-one name="quarter" column="quarter_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter" lazy="false"/>
         <many-to-one name="brand" column="brand_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand" lazy="false"/>
         <many-to-one name="category" column="category_ID" class="com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category" lazy="false"/>
-        <property name="gender" column="gender" type="string" not-null="false"/>
+        <!--  <property name="gender" column="gender" type="string" not-null="false"/>
         <property name="sizeRange" column="size_range" type="string" not-null="false"/>
         <property name="sizeMin" column="size_min" type="integer" not-null="false"/>
-        <property name="sizeMax" column="size_max" type="integer" not-null="false"/>
+        <property name="sizeMax" column="size_max" type="integer" not-null="false"/>-->
    </class>
 
     <class name="ProductBarcode" table="product_barcode">

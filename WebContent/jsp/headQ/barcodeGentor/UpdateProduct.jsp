@@ -52,7 +52,7 @@ function update(){
 		} else if (!isValidPositiveInteger(categoryId)) {
 	        error += "货品类 - 必须是系统已经存在的类别，请检查<br/>";
 		}
-		
+		/*
 		var sizeMin = $("#sizeMin").combobox("getValue");
 		var sizeMax = $("#sizeMax").combobox("getValue");
 		
@@ -66,7 +66,7 @@ function update(){
 			if (sizeMax != ""){
 				error += "最小码段 和 最大码段  应该同时填写或者同时空白\n";
 			}
-		}
+		}*/
 
 	
 		if (error == ""){
@@ -157,9 +157,10 @@ function update(){
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td height="18"><strong>进价 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.recCost" id="recCost" class="easyui-numberbox"  data-options="required:true,min:0,max:999,precision:2" size="9" style="width:80px;" value="<s:if test="uiBean.product.product.recCost!=0"><s:property value="uiBean.product.product.recCost"/></s:if>" size="10"/></td>
 	       </tr>
+	       <!--  
 	       <tr class="InnerTableContent">
 	          <td height="18"><strong>进价(调价) </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.recCost2" id="recCost2" class="easyui-numberbox"  data-options="min:0,max:999,precision:2" size="9" style="width:80px;" value="<s:if test="uiBean.product.product.recCost2!=0"><s:property value="uiBean.product.product.recCost2"/></s:if>" size="10"/></td>
-	       </tr>	       
+	       </tr>-->	       
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td height="18"><strong>预设价1 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.wholeSalePrice" class="easyui-numberbox"  data-options="min:0,max:999,precision:2" size="9" style="width:80px;" id="wholeSalePrice" value="<s:if test="uiBean.product.product.wholeSalePrice!=0"><s:property value="uiBean.product.product.wholeSalePrice"/></s:if>" size="10"/></td>
 	       </tr>
@@ -175,7 +176,7 @@ function update(){
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td height="18"><strong>折扣 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.discount" id="discount" class="easyui-numberbox"  data-options="required:true,min:0,max:1,precision:2" size="9" style="width:80px;" value="<s:if test="uiBean.product.product.discount!=0"><s:property value="uiBean.product.product.discount"/></s:if>" size="10" /></td>
 	       </tr>	
-	       <tr class="InnerTableContent">
+	       <!--  <tr class="InnerTableContent">
 	          <td height="18"><strong>段位</strong>:</td><td><s:select name="formBean.productBarcode.product.sizeRange" cssClass="easyui-combobox"  style="width:80px;" size="1" id="sizeRange"   list="#{'S':'小','M':'中','L':'大'}" listKey="key" listValue="value" headerKey="" headerValue=""/></td>
 	       </tr>	       
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
@@ -187,7 +188,7 @@ function update(){
 	       </tr>	       
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td height="18"><strong>最大码</strong>:</td><td><s:select name="formBean.productBarcode.product.sizeMax" cssClass="easyui-combobox"  style="width:80px;" id="sizeMax"   list="{'',80,90,100,110,120,130,140,150,160,170,180}" /></td>
-	       </tr>		                
+	       </tr>	-->	                
 	       <tr class="InnerTableContent">
 	          <td colspan="2"> <a href="#" id="saveButton" class="easyui-linkbutton" onclick="update();">更新 </a>&nbsp;&nbsp;
 	                           <a href="#" id="saveButton" class="easyui-linkbutton" onclick="del();">删除</a>&nbsp;&nbsp;

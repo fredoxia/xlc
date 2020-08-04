@@ -531,7 +531,7 @@ public class ProductBarcodeService {
         	product.setProductCode(newProduct.getProductCode());
         	product.setSalesPrice(newProduct.getSalesPrice());
         	product.setRecCost(newProduct.getRecCost());
-        	product.setRecCost2(newProduct.getRecCost2());
+        	//product.setRecCost2(newProduct.getRecCost2());
         	product.setWholeSalePrice(newProduct.getWholeSalePrice());
         	product.setWholeSalePrice2(newProduct.getWholeSalePrice2());
         	product.setWholeSalePrice3(newProduct.getWholeSalePrice3());
@@ -548,29 +548,29 @@ public class ProductBarcodeService {
         	    product.setDiscount(newProduct.getDiscount());
         	product.setCreateDate(Common_util.getToday());
         	
-        	String gender = newProduct.getGender();
-        	if (gender.equals(""))
-        		product.setGender(null);
-        	else 
-        		product.setGender(newProduct.getGender());
-        	
-        	Integer sizeMin = newProduct.getSizeMin();
-        	if (sizeMin == null ||sizeMin == 0)
-        		product.setSizeMin(null);
-        	else 
-        		product.setSizeMin(sizeMin);
-        	
-        	Integer sizeMax = newProduct.getSizeMax();
-        	if (sizeMax == null ||sizeMax == 0)
-        		product.setSizeMax(null);
-        	else 
-        		product.setSizeMax(sizeMax);
-        	
-        	String sizeRange = newProduct.getSizeRange();
-        	if (sizeRange.equals(""))
-        		product.setSizeRange(null);
-        	else 
-        		product.setSizeRange(sizeRange);
+//        	String gender = newProduct.getGender();
+//        	if (gender.equals(""))
+//        		product.setGender(null);
+//        	else 
+//        		product.setGender(newProduct.getGender());
+//        	
+//        	Integer sizeMin = newProduct.getSizeMin();
+//        	if (sizeMin == null ||sizeMin == 0)
+//        		product.setSizeMin(null);
+//        	else 
+//        		product.setSizeMin(sizeMin);
+//        	
+//        	Integer sizeMax = newProduct.getSizeMax();
+//        	if (sizeMax == null ||sizeMax == 0)
+//        		product.setSizeMax(null);
+//        	else 
+//        		product.setSizeMax(sizeMax);
+//        	
+//        	String sizeRange = newProduct.getSizeRange();
+//        	if (sizeRange.equals(""))
+//        		product.setSizeRange(null);
+//        	else 
+//        		product.setSizeRange(sizeRange);
 
         	productDaoImpl.saveOrUpdate(product,true);
         	
@@ -669,7 +669,7 @@ public class ProductBarcodeService {
 	    	if (discount <= 0 || discount >1)
 	    		product.setDiscount(1);
 			productDaoImpl.save(product, true);
-			product.setSerialNum(String.valueOf(product.getProductId()));
+			product.setSerialNum(String.valueOf(product.getProductId()+5000000));
 			productDaoImpl.update(product, true);
 		} else {
 			product = productDaoImpl.getBySerialNum(serialNum,null);
@@ -794,9 +794,11 @@ public class ProductBarcodeService {
 	public final static String generateBarcode(int sequenceId, ChainStore chainStore){
 		StringBuffer prefix = null;
 		
+		//自己做的条码从3开始
 		if (chainStore == null)
-			prefix = new StringBuffer("1");
+			prefix = new StringBuffer("3");
 		else 
+		//连锁店条码
 			prefix = new StringBuffer("9");
 
 		String productIdS = String.valueOf(sequenceId);
@@ -1088,28 +1090,12 @@ public class ProductBarcodeService {
 	 * @param inventory
 	 */
 	@Transactional
-	public Response batchInsertBarcode(File inventory, Product product) {
+	public Response batchInsertBarcode(File inventory) {
 		Response response = new Response();
+
 		
-		/**
-		 * 1. 服务器端验证, 年份, 季度，品牌不能为空，并且 品牌不能是连锁店自己新增品牌
-		 */
-		Area area = areaDaoImpl.get(Area.CURRENT_AREA, true);
-		Year year = yearDaoImpl.get(product.getYear().getYear_ID(), true);
-		Quarter quarter = quarterDaoImpl.get(product.getQuarter().getQuarter_ID(), true);
-		Brand brand = brandDaoImpl.get(product.getBrand().getBrand_ID(), true);
-		if (year == null)
-			response.setFail("产品年份不能为空, 请检查");
-		else if (quarter == null)
-			response.setFail("产品季度不能为空, 请检查");
-		else if (brand == null)
-			response.setFail("产品品牌不能为空, 请检查");
-		else if (brand.getChainStore() != null){
-			response.setFail("产品品牌不能是连锁店品牌, 请检查");
-		}
-		
-		BarcodeImportTemplate barcodeTemplate = new BarcodeImportTemplate(inventory, year, quarter, brand, area);
-		barcodeTemplate.proccess(categoryDaoImpl, colorDaoImpl, productUnitDaoImpl);
+		BarcodeImportTemplate barcodeTemplate = new BarcodeImportTemplate(inventory);
+		barcodeTemplate.proccess(areaDaoImpl,yearDaoImpl, quarterDaoImpl, brandDaoImpl,categoryDaoImpl, colorDaoImpl, productUnitDaoImpl, productDaoImpl);
 		
 		if (!barcodeTemplate.isSuccess()){
 			response.setFail(barcodeTemplate.getValidateMsg());
@@ -1122,12 +1108,47 @@ public class ProductBarcodeService {
 				for (Object rowData: wsData){
 					List<Object> rowDataList = (List<Object>)rowData;
 					Product product2 = (Product)rowDataList.get(0);
-					List<Integer> colorIds = (List<Integer>)rowDataList.get(1);
+					Color color = (Color)rowDataList.get(1);
+					String barcode = (String)rowDataList.get(2);
 					
-					saveProduct(product2, colorIds, null);
+					//获取产品信息
+					String serialNum = product2.getSerialNum();
+					Product productOriginal = productDaoImpl.getBySerialNum(serialNum, null);
+					
+					if (productOriginal != null){
+						productOriginal.setBrand(product2.getBrand());
+						productOriginal.setYear(product2.getYear());
+						productOriginal.setQuarter(product2.getQuarter());
+						productOriginal.setCategory(product2.getCategory());
+						productOriginal.setCreateDate(Common_util.getToday());
+						productOriginal.setProductCode(product2.getProductCode());
+						productOriginal.setDiscount(product2.getDiscount());
+						productOriginal.setSalesPrice(product2.getSalesPrice());
+						productOriginal.setWholeSalePrice(product2.getWholeSalePrice());
+						productOriginal.setUnit(product2.getUnit());
+						productOriginal.setNumPerHand(product2.getNumPerHand());
+						productOriginal.setSalesPriceFactory(product2.getSalesPriceFactory());
+						productOriginal.setRecCost(product2.getRecCost());
+						product2 = productOriginal;
+						productDaoImpl.evict(productOriginal);
+					}  
+						
+					productDaoImpl.saveOrUpdate(product2, true);
+
+					
+					ProductBarcode pb = productBarcodeDaoImpl.getByBarcode(barcode);
+					if (pb == null){
+						pb = new ProductBarcode();
+						pb.setColor(color);
+						pb.setChainStore(null);
+						pb.setCreateDate(Common_util.getToday());
+						pb.setProduct(product2);
+						pb.setBarcode(barcode);
+						productBarcodeDaoImpl.save(pb, true);
+					}
 				}
 		
-				response.setSuccess("成功导入 "+ wsData.size() +"个 条码 . 条码信息 : " + year.getYear() + quarter.getQuarter_Name() + " " + brand.getBrand_Name());
+				response.setSuccess("成功导入 "+ wsData.size() +"个 条码 . ");
 			}
 			
 		}

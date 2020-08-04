@@ -60,4 +60,16 @@ public class YearDaoImpl extends BaseDAO<Year>{
 		return this.getByCritera(criteria, 0, 3, true);
 	}
 
+	public Year getYearByName(String yearS) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Year.class);
+		criteria.add(Restrictions.eq("year", yearS));
+		
+		List<Year> years2 =  this.getByCritera(criteria, true);
+		
+		if (years2 != null && years2.size() > 0)
+			return years2.get(0);
+		else 
+			return null;
+	}
+
 }

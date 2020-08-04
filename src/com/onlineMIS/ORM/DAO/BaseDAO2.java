@@ -16,24 +16,25 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import com.onlineMIS.common.loggerLocal;
 
-
 /**
- * the base DAO for MySQL server
+ * the base DAO for resource 2
  * @author fredo
- *
  * @param <T>
+ *
  */
-public class BaseDAO<T> extends DAOAbstract implements DAOInterface<T>{
+public class BaseDAO2<T> extends DAOAbstract implements DAOInterface<T>{
 
 	@Autowired
-	private HibernateTemplate hibernateTemplate;
-	
+	private HibernateTemplate hibernateTemplate2;
+
 	public HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
+		return hibernateTemplate2;
 	}
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate2) {
+		this.hibernateTemplate2 = hibernateTemplate2;
 	}
+
 
 	@Override
 	public List<T> getByCritera(DetachedCriteria criteria, boolean cached){

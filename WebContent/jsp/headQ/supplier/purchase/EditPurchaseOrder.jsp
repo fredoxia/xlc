@@ -190,7 +190,7 @@ function addNewRow(barcode){
     str += "<td>" + colorName+"</td>";	
     str += "<td>"+barcode.product.unit+"</td>"; 					 		
     str += "<td><input type='text' name='formBean.order.productList["+indexB+"].quantity' id='quantity"+indexB+"' value='"+barcode.product.numPerHand+"' size='2'  onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
-    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].recCost' id='recCost"+indexB+"' value='"+recCost+"' size='4'  readonly/>  </td>";
+    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].recCost' id='recCost"+indexB+"' value='"+recCost+"' size='4' onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
     str += "<td>"+barcode.product.wholeSalePrice+"</td>";
     str += "<td><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' onclick='deleteRow(\"row"+indexB +"\","+indexB+")' style='cursor:pointer;'/></td>";
     str += "<td></td>";			 		
@@ -227,8 +227,8 @@ function validateForm(){
 		error += "必须录入数据后才能提交<br\>";
 	}
 	var totalDiscount = $("#totalDiscount").val();
-	if (isNaN(totalDiscount) || totalDiscount < 0){
-		error += "优惠 - 必须是大于或者等于0的数字!<br\>";
+	if (isNaN(totalDiscount) ){
+		error += "优惠 - 必须是数字!<br\>";
 	}
 
 	var hasChar = false;
@@ -456,7 +456,7 @@ $(document).ready(function(){
 					 		<td><s:property value="#orderProduct.pb.color.name"/></td>			 		
 					 		<td><s:property value="#orderProduct.pb.product.unit"/></td>	
 					 		<td><input type="text" name="formBean.order.productList[<s:property value="#st.index"/>].quantity" id="quantity<s:property value="#st.index"/>" size='2' onchange="onQuantityChange();" onfocus="this.select();" value="<s:property value="#orderProduct.quantity"/>"/></td>
-					 		<td><input type="text" name="formBean.order.productList[<s:property value="#st.index"/>].recCost" id="recCost<s:property value="#st.index"/>" size='4' readonly onfocus="this.select();" value="<s:property value="#orderProduct.recCost"/>"/></td>		 					 		
+					 		<td><input type="text" name="formBean.order.productList[<s:property value="#st.index"/>].recCost" id="recCost<s:property value="#st.index"/>" size='4' onchange="onQuantityChange();" onfocus="this.select();"  onfocus="this.select();" value="<s:property value="#orderProduct.recCost"/>"/></td>		 					 		
 					 		<td><s:text name="format.totalPrice">
 								     <s:param value="#orderProduct.wholeSalePrice"/>
 								 </s:text></td>			 							 		

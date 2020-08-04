@@ -67,20 +67,7 @@ function saveProduct(){
 		        error += "货品类 - 必须是系统已经存在的类别，请检查<br/>";
 			}
 			
-			var sizeMin = $("#sizeMin").combobox("getValue");
-			var sizeMax = $("#sizeMax").combobox("getValue");
-			
-			if (sizeMin != ""){
-				if (sizeMax == ""){
-					error += "最小码段 和 最大码段  应该同时填写或者同时空白\n";
-				} else if (parseInt(sizeMin) > parseInt(sizeMax)){
-					error += "最小码段 应该小于 最大码段 \n";
-				}
-			} else {
-				if (sizeMax != ""){
-					error += "最小码段 和 最大码段  应该同时填写或者同时空白\n";
-				}
-			}
+
 
 		
 			if (error == ""){
@@ -126,7 +113,7 @@ function saveBarcodeBackProcess(data){
 				     belong = "连锁店"; 
 		          $("<tr align='center' class='InnerTableContent'" + bg +"><td>"+barcodes[i].product.year.year + " " + barcodes[i].product.quarter.quarter_Name +"</td><td>"+
 				          barcodes[i].product.brand.brand_Name+"</td><td>"+
-				          barcodes[i].product.genderS + barcodes[i].product.sizeRangeS+ " " + barcodes[i].product.category.category_Name+"</td><td>"+
+				          barcodes[i].product.category.category_Name+"</td><td>"+
 				          barcodes[i].product.productCode+"</td><td>"+
 				          parseValue(barcodes[i].color.name)+"</td><td>"+
 //Size will be implement later				          parseValue(barcodes[i].size.name)+"</td><td>"+ 
@@ -194,10 +181,10 @@ function assignProductValue(p){
 		
 		$("#category_ID").combobox("select",p.category.category_ID);
 		
-		$("#sizeMin").combobox("select",p.sizeMin);
-		$("#sizeMax").combobox("select",p.sizeMax);
-		$("#gender").combobox("select",p.gender);
-		$("#sizeRange").combobox("select",p.sizeRange);
+		//$("#sizeMin").combobox("select",p.sizeMin);
+		//$("#sizeMax").combobox("select",p.sizeMax);
+		//$("#gender").combobox("select",p.gender);
+		//$("#sizeRange").combobox("select",p.sizeRange);
 	}
 }
 function clearAllData(){
@@ -289,9 +276,9 @@ function clickSize(){
       </td>
       
       <td><strong>性别：</strong></td>    
-      <td><s:select name="formBean.productBarcode.product.gender" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" size="1" id="gender"   list="#{'M':'男','F':'女','N':'中性'}" listKey="key" listValue="value"  headerKey="" headerValue=""/></td> 
+      <td><!--<s:select name="formBean.productBarcode.product.gender" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" size="1" id="gender"   list="#{'M':'男','F':'女','N':'中性'}" listKey="key" listValue="value"  headerKey="" headerValue=""/>--></td> 
       <td><strong>段位：</strong></td> 
-      <td><s:select name="formBean.productBarcode.product.sizeRange" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" size="1" id="sizeRange"   list="#{'S':'小','M':'中','L':'大'}" listKey="key" listValue="value" headerKey="" headerValue=""/> </td> 
+      <td><!--<s:select name="formBean.productBarcode.product.sizeRange" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" size="1" id="sizeRange"   list="#{'S':'小','M':'中','L':'大'}" listKey="key" listValue="value" headerKey="" headerValue=""/>--> </td> 
       <td>&nbsp;</td>     
     </tr>
     <tr class="InnerTableContent">
@@ -308,9 +295,9 @@ function clickSize(){
       </td>
       <td>&nbsp;</td>
       <td><strong>最小码段：</strong></td>  
-      <td><s:select name="formBean.productBarcode.product.sizeMin" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMin" list="{'',80,90,100,110,120,130,140,150,160,170,180}" /></td> 
+      <td><!--<s:select name="formBean.productBarcode.product.sizeMin" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMin" list="{'',80,90,100,110,120,130,140,150,160,170,180}" />--></td> 
       <td><strong>最大码段：</strong></td> 
-      <td><s:select name="formBean.productBarcode.product.sizeMax" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMax"   list="{'',80,90,100,110,120,130,140,150,160,170,180}" /></td> 
+      <td><!--<s:select name="formBean.productBarcode.product.sizeMax" cssClass="easyui-combobox"  style="width:80px;" data-options="editable:false" id="sizeMax"   list="{'',80,90,100,110,120,130,140,150,160,170,180}" />--></td> 
       <td>&nbsp;</td>        
     </tr>
    <tr class="InnerTableContent">
@@ -326,7 +313,7 @@ function clickSize(){
 		        <input type="text" name="formBean.productBarcode.product.recCost" class="easyui-numberbox" style="width:80px;" id="recCost"  data-options="required:true,min:0,max:999,precision:2" size="9"/>
 		      </td>
               <td width="80"><strong>进价(调价):</strong></td> 
-      		  <td width="100"><input type="text" name="formBean.productBarcode.product.recCost2" class="easyui-numberbox" style="width:80px;" id="recCost2"  data-options="min:0,max:999,precision:2" size="9"/></td> 		      
+      		  <td width="100"><!--  <input type="text" name="formBean.productBarcode.product.recCost2" class="easyui-numberbox" style="width:80px;" id="recCost2"  data-options="min:0,max:999,precision:2" size="9"/>--></td> 		      
 		      <td width="100"></td>		      
 		      <td width="80"><strong>厂家零售价：</strong></td>
 		      <td width="110"><input type="text" name="formBean.productBarcode.product.salesPriceFactory" class="easyui-numberbox" style="width:80px;" id="salesPriceFactory" data-options="min:0,max:999,precision:2" size="9"/></td>

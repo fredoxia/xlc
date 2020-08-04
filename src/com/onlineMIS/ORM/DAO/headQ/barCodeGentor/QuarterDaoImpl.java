@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
@@ -31,5 +33,17 @@ public class QuarterDaoImpl extends BaseDAO<Quarter> {
 		}
 		
 		return quarterMap;
+	}
+
+	public Quarter getByName(String quarterS) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Quarter.class);
+		criteria.add(Restrictions.eq("quarter_Name", quarterS));
+		
+		List<Quarter> quarter2 =  this.getByCritera(criteria, true);
+		
+		if (quarter2 != null && quarter2.size() > 0)
+			return quarter2.get(0);
+		else 
+			return null;
 	}
 }

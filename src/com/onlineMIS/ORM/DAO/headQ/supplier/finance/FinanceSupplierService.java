@@ -1,5 +1,6 @@
 package com.onlineMIS.ORM.DAO.headQ.supplier.finance;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -14,11 +15,17 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.AreaDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.CategoryDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.QuarterDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.YearDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.supplier.finance.sorter.FinanceSummaryRptVOElesSorter;
 import com.onlineMIS.ORM.DAO.headQ.supplier.purchase.PurchaseOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.supplier.supplierMgmt.HeadQSupplierDaoImpl;
@@ -26,11 +33,19 @@ import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReport;
 import com.onlineMIS.ORM.entity.chainS.report.ChainFinanceReportItem;
 import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Area;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.headQ.custMgmt.HeadQCust;
 import com.onlineMIS.ORM.entity.headQ.finance.ChainAcctFlowReportItem;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBill;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceBillItem;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceCategory;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Product2;
 import com.onlineMIS.ORM.entity.headQ.supplier.finance.FinanceSummaryRptVOEles;
 import com.onlineMIS.ORM.entity.headQ.finance.HeadQAcctFlow;
 import com.onlineMIS.ORM.entity.headQ.finance.HeadQFinanceTrace;
@@ -48,6 +63,7 @@ import com.onlineMIS.action.headQ.finance.FinanceActionFormBean;
 import com.onlineMIS.action.headQ.supplier.finance.FinanceSupplierActionFormBean;
 import com.onlineMIS.action.headQ.supplier.finance.FinanceSupplierActionUIBean;
 import com.onlineMIS.common.Common_util;
+import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.sorter.ChainAcctFlowReportItemSort;
 import com.onlineMIS.sorter.SupplierAcctFlowReportItemSort;
 
@@ -68,7 +84,20 @@ public class FinanceSupplierService {
     private PurchaseOrderDaoImpl purchaseOrderDaoImpl;
     @Autowired
     private SupplierFinanceTraceImpl supplierFinanceTraceImpl;
-	
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl productDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductDaoImpl2 productDaoImpl2;	
+	@Autowired
+	private AreaDaoImpl areaDaoImpl;
+	@Autowired
+	private YearDaoImpl yearDaoImpl;
+	@Autowired
+	private QuarterDaoImpl quarterDaoImpl;
+	@Autowired
+	private BrandDaoImpl brandDaoImpl;
+	@Autowired
+	private CategoryDaoImpl categoryDaoImpl;
 	/**
 	 * to prepare the bean when create the finance bill
 	 * @param formBean
@@ -135,6 +164,77 @@ public class FinanceSupplierService {
 	 * @return
 	 */
 	public Response saveFBToDraft(FinanceBillSupplier financeBill, UserInfor user) {
+		kk
+    	//2. 更新product
+	    String PRODUCT_MAX_NOW = "SELECT MAX(createDate) FROM Product WHERE LENGTH(serial_number) < 8";
+	    List<Object> productMax = productDaoImpl.executeHQLSelect(PRODUCT_MAX_NOW, null,null, false);
+	    Object maxObj = productMax.get(0);
+	    if (maxObj != null){
+	    	Timestamp maxTime = (Timestamp)maxObj;
+	    	
+		    //获取千禧比这个大的
+	    	DetachedCriteria criteria2 = DetachedCriteria.forClass(Product2.class);
+	    	criteria2.add(Restrictions.gt("createDate", maxTime));
+	    	criteria2.add(Restrictions.isNull("chainId"));
+	    	List<Product2> products =  productDaoImpl2.getByCritera(criteria2, false);
+		    
+	    	
+	    	if (products != null && products.size() > 0){
+	    		for (Product2 product2 : products){
+	    			
+	    			//是2019年以前的条码略过
+	    			if (product2.getYearId() < 9){
+	    				loggerLocal.warnB("skip : " + product2.toString());
+	    				continue;
+	    			} else {		    			
+		    			int areaId = product2.getAreaId();
+		    			int yearId = product2.getYearId();
+		    			int quarterId = product2.getQuarterId();
+		    			int brandId = product2.getBrandId();
+		    			int categoryId = product2.getCategoryId();
+		    			
+		    			Area area = areaDaoImpl.get(areaId, true);
+		    			Year year = yearDaoImpl.get(yearId, true);
+		    			Quarter quarter = quarterDaoImpl.get(quarterId, true);
+		    			Brand brand = brandDaoImpl.get(brandId, true);
+		    			Category category = categoryDaoImpl.get(categoryId, true);
+		    			
+		    			if (area == null || year == null || quarter == null || brand == null || category ==null){
+		    				loggerLocal.errorB(" 无法导入 ,出现基础资料null ： " + areaId + "," + yearId + "," +quarterId + "," +brandId + "," +categoryId);
+		    				continue;
+		    			} else {
+		    				Product product = new Product();
+		    				BeanUtils.copyProperties(product2,product);
+		    			    product.setArea(area);
+		    			    product.setYear(year);
+		    			    product.setQuarter(quarter);
+		    			    product.setBrand(brand);
+		    			    product.setCategory(category);
+		    				
+							String serialNum = product2.getSerialNum();
+							Product productOriginal = productDaoImpl.getBySerialNum(serialNum, null);
+							
+							if (productOriginal != null){
+								loggerLocal.infoB(product.toString());
+								BeanUtils.copyProperties(product,productOriginal);
+								productDaoImpl.update(productOriginal, true);
+							} else {
+								try {
+								productDaoImpl.save(product, true);
+								} catch (Exception e){
+									e.printStackTrace();
+								}
+							}
+
+		    			}
+	    			}
+	    		}
+	    	}	
+	    }
+	    
+	    
+
+    	
 		Response response = new Response();
 		int billId = financeBill.getId();
 		

@@ -10,12 +10,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Color2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.NumPerHand2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductUnit2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Year2;
+
 import org.apache.catalina.User;
 import org.springframework.beans.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,8 +43,11 @@ import com.onlineMIS.ORM.DAO.headQ.user.UserInforDaoImpl;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.NumPerHand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductUnit;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQInventoryStock;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQInventoryStore;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistory;
@@ -79,7 +87,10 @@ public class SupplierPurchaseService {
 	@Autowired
 	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ColorDaoImpl2 colorDaoImpl2;	
 
-
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.NumPerHandDaoImpl numPerHandDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.NumPerHandDaoImpl2 numPerHandDaoImpl2;	
 	
 	@Autowired
 	private PurchaseOrderDaoImpl purchaseOrderDaoImpl;
@@ -196,7 +207,8 @@ public class SupplierPurchaseService {
 		Response response = new Response();
 
 		try {
-	
+
+	    	
 			if (!validatePurchaseOrder(order).isSuccess()){
 				return response;
 			}

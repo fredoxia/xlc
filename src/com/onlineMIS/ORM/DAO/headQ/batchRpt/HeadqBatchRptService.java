@@ -78,9 +78,15 @@ import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.NumPerHand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductUnit;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Color2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.NumPerHand2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductUnit2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Year2;
 import com.onlineMIS.ORM.entity.headQ.supplier.finance.FinanceCategorySupplier;
 import com.onlineMIS.common.loggerLocal;
 
@@ -97,6 +103,8 @@ public class HeadqBatchRptService {
 	
 	@Autowired
 	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.YearDaoImpl yearDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.YearDaoImpl2 yearDaoImpl2;	
 	
 	@Autowired
 	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.QuarterDaoImpl quarterDaoImpl;
@@ -111,7 +119,15 @@ public class HeadqBatchRptService {
 	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ColorDaoImpl colorDaoImpl;
 	@Autowired
 	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ColorDaoImpl2 colorDaoImpl2;	
-
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductUnitDaoImpl productUnitDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductUnitDaoImpl2 productUnitDaoImpl2;	
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.NumPerHandDaoImpl numPerHandDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.NumPerHandDaoImpl2 numPerHandDaoImpl2;	
+	
 	private Calendar today = Calendar.getInstance();
 	
 	/**
@@ -133,7 +149,6 @@ public class HeadqBatchRptService {
     	criteria.add(Restrictions.gt("brand_ID", brandMax));
     	criteria.add(Restrictions.isNull("chain_id"));
     	List<com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2> brands =  brandDaoImpl2.getByCritera(criteria, false);
-	  
     	if (brands != null && brands.size() > 0){
     		for (Brand2 brand2 : brands){
     			Brand brand = new Brand();
@@ -178,6 +193,61 @@ public class HeadqBatchRptService {
     			BeanUtils.copyProperties(color2,color);
     			loggerLocal.infoB(color.toString());
     			colorDaoImpl.save(color, true);
+    		}
+    	}	
+    	
+
+		//4.更新product unit
+	    String PROD_UNIT_NOW = "SELECT MAX(id) FROM ProductUnit";
+	    int productUnitMax = productUnitDaoImpl.executeHQLCount(PROD_UNIT_NOW, null, false);
+	    
+	    //获取千禧比这个大的
+    	DetachedCriteria criteria5 = DetachedCriteria.forClass(ProductUnit2.class);
+    	criteria5.add(Restrictions.gt("id", productUnitMax));
+
+    	List<ProductUnit2> productUnits2 =  productUnitDaoImpl2.getByCritera(criteria5, false);
+    	if (productUnits2 != null && productUnits2.size() > 0){
+    		for (ProductUnit2 pu2 : productUnits2){
+    			ProductUnit productUnit = new ProductUnit();
+    			BeanUtils.copyProperties(pu2,productUnit);
+    			loggerLocal.infoB(productUnit.toString());
+    			productUnitDaoImpl.save(productUnit, true);
+    		}
+    	}	 
+    	
+    	//5.更新year
+	    String year_NOW = "SELECT MAX(year_ID) FROM Year";
+	    int yearIdMax = yearDaoImpl.executeHQLCount(year_NOW, null, false);
+	    
+	    //获取千禧比这个大的
+    	DetachedCriteria criteria6 = DetachedCriteria.forClass(Year2.class);
+    	criteria6.add(Restrictions.gt("id", yearIdMax));
+
+    	List<Year2> year2s =  yearDaoImpl2.getByCritera(criteria6, false);
+    	if (year2s != null && year2s.size() > 0){
+    		for (Year2 year2 : year2s){
+    			Year year = new Year();
+    			BeanUtils.copyProperties(year2,year);
+    			loggerLocal.infoB(year.toString());
+    			yearDaoImpl.save(year, true);
+    		}
+    	}	  
+    	
+    	//6.更新numPerHand
+	    String numPerHand_NOW = "SELECT MAX(id) FROM NumPerHand";
+	    int numPerHandIdMax = numPerHandDaoImpl.executeHQLCount(numPerHand_NOW, null, false);
+	    
+	    //获取千禧比这个大的
+    	DetachedCriteria criteria7 = DetachedCriteria.forClass(NumPerHand2.class);
+    	criteria7.add(Restrictions.gt("id", numPerHandIdMax));
+
+    	List<NumPerHand2> numPerHand2s =  numPerHandDaoImpl2.getByCritera(criteria7, false);
+    	if (numPerHand2s != null && numPerHand2s.size() > 0){
+    		for (NumPerHand2 numPerHand2 : numPerHand2s){
+    			NumPerHand numPerHand = new NumPerHand();
+    			BeanUtils.copyProperties(numPerHand2,numPerHand);
+    			loggerLocal.infoB(numPerHand.toString());
+    			numPerHandDaoImpl.save(numPerHand, true);
     		}
     	}	
 		return response;

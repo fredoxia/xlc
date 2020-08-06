@@ -28,7 +28,7 @@ $(document).ready(function(){
 		nowrap : false,
 		columns : [ [
 					{field:'date', width:100,title:'单据日期'},
-					{field:'supplierName', width:80,title:'供应商',fixed:true,
+					{field:'supplierName', width:100,title:'供应商',fixed:true,
 						formatter: function (value, row, index){
 							return row.supplier.name;
 						}},
@@ -37,7 +37,10 @@ $(document).ready(function(){
 						formatter: function (value, row, index){
 							return parseQuantity(row.quantity);
 						}},
-					{field:'amount', width:50,title:'单据金额'},
+					{field:'amount', width:50,title:'单据金额',
+							formatter: function (value, row, index){
+								return parseNumberValue(row.amount);
+							}},
 					{field:'comment', width:80,title:'单据摘要'},
 					{field:'acctIncrease', width:60,title:'应付增加',
 						formatter: function (value, row, index){
@@ -49,7 +52,7 @@ $(document).ready(function(){
 						}},
 					{field:'postAcct', width:90,title:'+应付/-应收金额',
 						formatter: function (value, row, index){
-							return (row.postAcct).toFixed(0);
+							return (row.postAcct).toFixed(1);
 						}},
 					{field:'action', width:65,title:'',
 						formatter: function (value, row, index){

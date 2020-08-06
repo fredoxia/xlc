@@ -49,7 +49,7 @@
     <class name="Year" table="year">
         <cache usage="read-write" region="qxbabyConstant"/>
         <id name="year_ID" column="year_ID" type="integer">
-            <generator class="identity" />
+            <generator class="assigned" />
         </id>
         <property name="year" column="year" type="string"/>
         <property name="year_Code" column="year_Code" type="string"/>
@@ -64,8 +64,6 @@
         <property name="name" column="name" type="string"/>
         <property name="deleted" column="deleted" type="integer"/>
     </class>
-    
-
  
     <class name="Size" table="size">
         <cache usage="read-write" region="qxbabyConstant"/>
@@ -125,14 +123,14 @@
     <class name="NumPerHand" table="num_per_hand">
         <cache usage="read-write" region="qxbabyConstant"/>
         <id name="id" column="id" type="integer">
-            <generator class="identity" />
+            <generator class="assigned" />
         </id>
         <property name="numPerHand" column="numPerHand" type="integer"/>
     </class>
     <class name="ProductUnit" table="product_unit">
         <cache usage="read-write" region="qxbabyConstant"/>
         <id name="id" column="id" type="integer">
-            <generator class="identity" />
+            <generator class="assigned" />
         </id>
         <property name="productUnit" column="productUnit" type="string"/>
     </class> 

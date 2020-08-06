@@ -73,7 +73,7 @@ public class Product  implements Serializable{
     /**
      * the whole saler's cost price批发商进价2
      */
-    private double recCost2;
+    private double recCost2 = 0;
     /**
      * the price decided by factory 厂家零售价
      */

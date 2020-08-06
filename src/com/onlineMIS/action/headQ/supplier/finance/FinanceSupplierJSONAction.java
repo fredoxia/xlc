@@ -71,7 +71,7 @@ public class FinanceSupplierJSONAction extends FinanceSupplierAction {
 	 */
 	public String saveFBToDraft(){
 		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
-		
+		loggerLocal.info(loginUserInfor.getUser_name() + " : FinanceSupplierJSONAction.saveFBToDraft");
 		Response response = new Response();
 		
 		try {
@@ -96,7 +96,7 @@ public class FinanceSupplierJSONAction extends FinanceSupplierAction {
 	 */
 	public String postFB(){
 		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
-		
+		loggerLocal.info(loginUserInfor.getUser_name() + " : FinanceSupplierJSONAction.postFB");
 		Response response = new Response();
 		
 
@@ -141,6 +141,9 @@ public class FinanceSupplierJSONAction extends FinanceSupplierAction {
 	 * @return
 	 */
 	public String searchFHQBill(){
+		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		loggerLocal.info(loginUserInfor.getUser_name() + " : FinanceSupplierJSONAction.searchFHQBill");
+		
 		List<FinanceBillSupplier> fianBills = financeSupplierService.searchFHQBills(formBean);
 		
 		jsonMap.put("bills", fianBills);
@@ -168,7 +171,8 @@ public class FinanceSupplierJSONAction extends FinanceSupplierAction {
 	 * @return
 	 */
 	public String searchAcctFlow(){
-  
+		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		loggerLocal.info(loginUserInfor.getUser_name() + " : FinanceSupplierJSONAction.searchAcctFlow");
 		Date startDate = Common_util.formStartDate(formBean.getSearchStartTime());
 		Date endDate = Common_util.formEndDate(formBean.getSearchEndTime());
 		int supplierId = formBean.getOrder().getSupplier().getId();
@@ -201,6 +205,8 @@ public class FinanceSupplierJSONAction extends FinanceSupplierAction {
 	 * @return
 	 */
 	public String generateFinanceRpt(){
+		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+		loggerLocal.info(loginUserInfor.getUser_name() + " : FinanceSupplierJSONAction.generateFinanceRpt");
 		Response response = new Response();
 		try {
 			response = financeSupplierService.generateFinanceReport(formBean.getOrder().getSupplier().getId(), formBean.getSearchStartTime(), formBean.getSearchEndTime());

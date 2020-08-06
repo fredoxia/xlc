@@ -669,7 +669,7 @@ public class ProductBarcodeService {
 	    	if (discount <= 0 || discount >1)
 	    		product.setDiscount(1);
 			productDaoImpl.save(product, true);
-			product.setSerialNum(String.valueOf(product.getProductId()+5000000));
+			product.setSerialNum(String.valueOf(product.getProductId()+50000000));
 			productDaoImpl.update(product, true);
 		} else {
 			product = productDaoImpl.getBySerialNum(serialNum,null);

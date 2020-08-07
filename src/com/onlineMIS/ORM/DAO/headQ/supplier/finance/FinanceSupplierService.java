@@ -46,6 +46,7 @@ import com.onlineMIS.ORM.entity.headQ.finance.FinanceBillItem;
 import com.onlineMIS.ORM.entity.headQ.finance.FinanceCategory;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Product2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductBarcode2;
 import com.onlineMIS.ORM.entity.headQ.supplier.finance.FinanceSummaryRptVOEles;
 import com.onlineMIS.ORM.entity.headQ.finance.HeadQAcctFlow;
 import com.onlineMIS.ORM.entity.headQ.finance.HeadQFinanceTrace;
@@ -88,6 +89,10 @@ public class FinanceSupplierService {
 	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl productDaoImpl;
 	@Autowired
 	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductDaoImpl2 productDaoImpl2;	
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl productBarcodeDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductBarcodeDaoImpl2 productBarcodeDaoImpl2;	
 	@Autowired
 	private AreaDaoImpl areaDaoImpl;
 	@Autowired
@@ -164,7 +169,7 @@ public class FinanceSupplierService {
 	 * @return
 	 */
 	public Response saveFBToDraft(FinanceBillSupplier financeBill, UserInfor user) {
-		kk
+		
     	//2. 更新product
 	    String PRODUCT_MAX_NOW = "SELECT MAX(createDate) FROM Product WHERE LENGTH(serial_number) < 8";
 	    List<Object> productMax = productDaoImpl.executeHQLSelect(PRODUCT_MAX_NOW, null,null, false);
@@ -184,6 +189,76 @@ public class FinanceSupplierService {
 	    			
 	    			//是2019年以前的条码略过
 	    			if (product2.getYearId() < 9){
+	    				loggerLocal.warnB("skip : " + product2.toString());
+	    				continue;
+	    			} else {		    			
+		    			int areaId = product2.getAreaId();
+		    			int yearId = product2.getYearId();
+		    			int quarterId = product2.getQuarterId();
+		    			int brandId = product2.getBrandId();
+		    			int categoryId = product2.getCategoryId();
+		    			
+		    			Area area = areaDaoImpl.get(areaId, true);
+		    			Year year = yearDaoImpl.get(yearId, true);
+		    			Quarter quarter = quarterDaoImpl.get(quarterId, true);
+		    			Brand brand = brandDaoImpl.get(brandId, true);
+		    			Category category = categoryDaoImpl.get(categoryId, true);
+		    			
+		    			if (area == null || year == null || quarter == null || brand == null || category ==null){
+		    				loggerLocal.errorB(" 无法导入 ,出现基础资料null ： " + areaId + "," + yearId + "," +quarterId + "," +brandId + "," +categoryId);
+		    				continue;
+		    			} else {
+		    				Product product = new Product();
+		    				BeanUtils.copyProperties(product2,product);
+		    			    product.setArea(area);
+		    			    product.setYear(year);
+		    			    product.setQuarter(quarter);
+		    			    product.setBrand(brand);
+		    			    product.setCategory(category);
+		    				
+							String serialNum = product2.getSerialNum();
+							Product productOriginal = productDaoImpl.getBySerialNum(serialNum, null);
+							
+							if (productOriginal != null){
+								loggerLocal.infoB(product.toString());
+								BeanUtils.copyProperties(product,productOriginal);
+								productDaoImpl.update(productOriginal, true);
+							} else {
+								try {
+								productDaoImpl.save(product, true);
+								} catch (Exception e){
+									e.printStackTrace();
+								}
+							}
+
+		    			}
+	    			}
+	    		}
+	    	}	
+	    }
+	    
+	  	//3. 更新productBarcode
+	    String PB_MAX_NOW = "SELECT MAX(createDate) FROM ProductBarcode WHERE barcode like '3%'";
+	    List<Object> pbMax = productDaoImpl.executeHQLSelect(PB_MAX_NOW, null,null, false);
+	    Object maxObjPB = pbMax.get(0);
+	    if (maxObjPB != null){
+	    	Timestamp maxTime = (Timestamp)maxObjPB;
+	    	
+		    //获取千禧比这个大的
+	    	DetachedCriteria criteria2 = DetachedCriteria.forClass(ProductBarcode2.class);
+	    	criteria2.add(Restrictions.gt("createDate", maxTime));
+	    	criteria2.add(Restrictions.isNull("chainId"));
+	    	List<ProductBarcode2> products =  productBarcodeDaoImpl2.getByCritera(criteria2, false);
+		    
+	    	
+	    	if (products != null && products.size() > 0){
+	    		for (ProductBarcode2 product2 : products){
+	    			
+	    			//product 不存在就掠过
+	    			String serialNum = String.valueOf(product2.getProductId());
+	    			Product product = productDaoImpl.getBySerialNum(serialNum, null);
+	    			
+	    			if (product == null){
 	    				loggerLocal.warnB("skip : " + product2.toString());
 	    				continue;
 	    			} else {		    			

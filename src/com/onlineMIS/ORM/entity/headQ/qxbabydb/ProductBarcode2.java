@@ -91,6 +91,13 @@ public class ProductBarcode2 implements Serializable {
 		this.chainId = chainId;
 	}
 
+	@Override
+	public String toString() {
+		return "ProductBarcode2 [id=" + id + ", productId=" + productId + ", colorId=" + colorId + ", sizeId=" + sizeId
+				+ ", barcode=" + barcode + ", createDate=" + createDate + ", status=" + status + ", chainId=" + chainId
+				+ "]";
+	}
+
 	
 	
 }

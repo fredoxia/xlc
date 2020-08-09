@@ -10,7 +10,7 @@ public class PurchaseOrderProduct extends BaseProduct{
 	 * 
 	 */
 	private static final long serialVersionUID = 2866650360885118809L;
-	private ProductBarcode pb;
+	private ProductBarcode pb = new ProductBarcode();
 	private PurchaseOrder order;
 	private int quantity;
 	private double wholeSalePrice = 0;

@@ -15,15 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.onlineMIS.ORM.DAO.BaseDAO;
+import com.onlineMIS.ORM.DAO.BaseDAO2;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductBarcode2;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
 
 @Repository
-public class ProductBarcodeDaoImpl2  extends BaseDAO<ProductBarcode> {
+public class ProductBarcodeDaoImpl2  extends BaseDAO2<ProductBarcode2> {
 	@Autowired
 	private ProductDaoImpl2 productDaoImpl;
 	@Autowired

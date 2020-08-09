@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javassist.expr.NewArray;
@@ -50,6 +51,7 @@ import com.onlineMIS.ORM.DAO.chainS.sales.ChainStoreSalesOrderDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.sales.PurchaseService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.AreaDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.QuarterDaoImpl;
@@ -75,23 +77,32 @@ import com.onlineMIS.ORM.entity.chainS.sales.ChainStoreSalesOrderProduct;
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPCard;
 import com.onlineMIS.ORM.entity.chainS.vip.ChainVIPType;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Area;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.NumPerHand;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductUnit;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Color2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.NumPerHand2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.Product2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductBarcode2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductUnit2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Year2;
 import com.onlineMIS.ORM.entity.headQ.supplier.finance.FinanceCategorySupplier;
 import com.onlineMIS.common.loggerLocal;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 
 @Service
 public class HeadqBatchRptService {
+	@Autowired
+	private AreaDaoImpl areaDaoImpl;
 	@Autowired
 	private ChainStoreService chainStoreService;
 	
@@ -127,7 +138,14 @@ public class HeadqBatchRptService {
 	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.NumPerHandDaoImpl numPerHandDaoImpl;
 	@Autowired
 	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.NumPerHandDaoImpl2 numPerHandDaoImpl2;	
-	
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl productDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductDaoImpl2 productDaoImpl2;	
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl productBarcodeDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductBarcodeDaoImpl2 productBarcodeDaoImpl2;	
 	private Calendar today = Calendar.getInstance();
 	
 	/**
@@ -138,7 +156,9 @@ public class HeadqBatchRptService {
 
 		Response response = new Response();
 		
-		loggerLocal.infoB(new Date() + " 开始 每小时的基本信息导入 :  HeadqBatchRptService.runHourlyBasicImport()");
+		Random random=new Random();
+		int randomNum = random.nextInt(10);
+		loggerLocal.infoB("\n\n\n----------- " + randomNum+ " "+new Date() + " 开始 每小时的基本信息导入 :  HeadqBatchRptService.runHourlyBasicImport()");
 		
 		//1. 更新brand
 	    String BRAND_MAX_NOW = "SELECT MAX(brand_ID) FROM Brand";
@@ -153,8 +173,13 @@ public class HeadqBatchRptService {
     		for (Brand2 brand2 : brands){
     			Brand brand = new Brand();
     			BeanUtils.copyProperties(brand2,brand);
-    			loggerLocal.infoB(brand.toString());
-    			brandDaoImpl.save(brand, true);
+    			try {
+    				loggerLocal.infoB(brand.toString());
+    				brandDaoImpl.save(brand, true);
+    			} catch (Exception e){
+    				loggerLocal.errorB("导入错误 : " + randomNum+ " " + brand);
+    				e.printStackTrace();
+    			}
     		}
     	}
     	
@@ -172,8 +197,13 @@ public class HeadqBatchRptService {
     		for (Category2 category2 : categories){
     			Category category = new Category();
     			BeanUtils.copyProperties(category2,category);
-    			loggerLocal.infoB(category.toString());
-    			categoryDaoImpl.save(category, true);
+    			try {
+	    			loggerLocal.infoB(category.toString());
+	    			categoryDaoImpl.save(category, true);
+    			} catch (Exception e){
+    				loggerLocal.errorB("导入错误 : " + randomNum+ " " + category);
+    				e.printStackTrace();
+    			}
     		}
     	}		
 
@@ -191,8 +221,13 @@ public class HeadqBatchRptService {
     		for (Color2 color2 : color2s){
     			Color color = new Color();
     			BeanUtils.copyProperties(color2,color);
-    			loggerLocal.infoB(color.toString());
-    			colorDaoImpl.save(color, true);
+    			try {
+    				loggerLocal.infoB(color.toString());
+    				colorDaoImpl.save(color, true);
+    			} catch (Exception e){
+    				loggerLocal.errorB("导入错误 : " + randomNum+ " " + color);
+    				e.printStackTrace();
+    			}
     		}
     	}	
     	
@@ -210,8 +245,13 @@ public class HeadqBatchRptService {
     		for (ProductUnit2 pu2 : productUnits2){
     			ProductUnit productUnit = new ProductUnit();
     			BeanUtils.copyProperties(pu2,productUnit);
-    			loggerLocal.infoB(productUnit.toString());
-    			productUnitDaoImpl.save(productUnit, true);
+    			try {
+    				loggerLocal.infoB(productUnit.toString());
+    				productUnitDaoImpl.save(productUnit, true);
+    			} catch (Exception e){
+    				loggerLocal.errorB("导入错误 : " + randomNum+ " " + productUnit);
+    				e.printStackTrace();
+    			}
     		}
     	}	 
     	
@@ -228,8 +268,13 @@ public class HeadqBatchRptService {
     		for (Year2 year2 : year2s){
     			Year year = new Year();
     			BeanUtils.copyProperties(year2,year);
-    			loggerLocal.infoB(year.toString());
-    			yearDaoImpl.save(year, true);
+    			try {
+    				loggerLocal.infoB(year.toString());
+    				yearDaoImpl.save(year, true);
+    			} catch (Exception e){
+    				loggerLocal.errorB("导入错误 : " + randomNum+ " " + year);
+    				e.printStackTrace();
+    			}
     		}
     	}	  
     	
@@ -246,10 +291,188 @@ public class HeadqBatchRptService {
     		for (NumPerHand2 numPerHand2 : numPerHand2s){
     			NumPerHand numPerHand = new NumPerHand();
     			BeanUtils.copyProperties(numPerHand2,numPerHand);
-    			loggerLocal.infoB(numPerHand.toString());
-    			numPerHandDaoImpl.save(numPerHand, true);
+    			try {
+    			  loggerLocal.infoB(numPerHand.toString());
+    			  numPerHandDaoImpl.save(numPerHand, true);
+    			} catch (Exception e){
+    				loggerLocal.errorB("导入错误 : " + randomNum+ " " + numPerHand);
+    				e.printStackTrace();
+    			}
     		}
     	}	
+    	
+     	//2. 更新product
+	    String PRODUCT_MAX_NOW = "SELECT MAX(createDate) FROM Product WHERE LENGTH(serial_number) < 8";
+	    List<Object> productMax = productDaoImpl.executeHQLSelect(PRODUCT_MAX_NOW, null,null, false);
+	    Object maxObj = productMax.get(0);
+	    if (maxObj != null){
+	    	Timestamp maxTime = (Timestamp)maxObj;
+	    	
+		    //获取千禧比这个大的
+	    	DetachedCriteria criteria8 = DetachedCriteria.forClass(Product2.class);
+	    	criteria8.add(Restrictions.gt("createDate", maxTime));
+	    	criteria8.add(Restrictions.isNull("chainId"));
+	    	criteria8.addOrder(Order.asc("createDate"));
+	    	List<Product2> products =  productDaoImpl2.getByCritera(criteria8, false);
+		    
+	    	
+	    	if (products != null && products.size() > 0){
+	    		for (Product2 product2 : products){
+	    			
+	    			//是2019年以前的条码略过
+	    			if (product2.getYearId() < 9){
+	    				loggerLocal.warnB(" 跳过2019年以前条码 : " + randomNum+ " " + product2.toString());
+	    				continue;
+	    			} else {		    			
+		    			int areaId = product2.getAreaId();
+		    			int yearId = product2.getYearId();
+		    			int quarterId = product2.getQuarterId();
+		    			int brandId = product2.getBrandId();
+		    			int categoryId = product2.getCategoryId();
+		    			
+		    			Area area = areaDaoImpl.get(areaId, true);
+		    			Year year = yearDaoImpl.get(yearId, true);
+		    			Quarter quarter = quarterDaoImpl.get(quarterId, true);
+		    			Brand brand = brandDaoImpl.get(brandId, true);
+		    			Category category = categoryDaoImpl.get(categoryId, true);
+		    			
+		    			if (area == null || year == null || quarter == null || brand == null || category ==null){
+		    				loggerLocal.errorB(" 无法导入 ,出现基础资料null ： " + areaId + "," + yearId + "," +quarterId + "," +brandId + "," +categoryId);
+		    				continue;
+		    			} else {
+		    				Product product = new Product();
+		    				BeanUtils.copyProperties(product2,product);
+		    			    product.setArea(area);
+		    			    product.setYear(year);
+		    			    product.setQuarter(quarter);
+		    			    product.setBrand(brand);
+		    			    product.setCategory(category);
+		    				
+							String serialNum = product2.getSerialNum();
+							Product productOriginal = productDaoImpl.getBySerialNum(serialNum, null);
+							
+							if (productOriginal != null){
+
+								try {
+									loggerLocal.infoB("更新Product : " + randomNum+ " " + product.toString());
+									int productId = productOriginal.getProductId();
+									double recost = productOriginal.getRecCost();
+									BeanUtils.copyProperties(product,productOriginal);
+									productOriginal.setProductId(productId);
+									productOriginal.setRecCost(recost);
+								    productDaoImpl.update(productOriginal, true);
+								} catch (Exception e){
+									System.out.println(productOriginal);
+									e.printStackTrace();
+								}
+							} else {
+								try {
+									loggerLocal.infoB("新建Product : " + randomNum+ " " + product.toString());
+									product.setRecCost(0);
+									productDaoImpl.save(product, true);
+								} catch (Exception e){
+									System.out.println(productOriginal);
+									e.printStackTrace();
+								}
+							}
+
+		    			}
+	    			}
+	    		}
+	    	}	
+	    }
+	    
+	  	//3. 更新productBarcode
+	    String PB_MAX_NOW = "SELECT MAX(createDate) FROM ProductBarcode WHERE barcode like '1%'";
+	    List<Object> pbMax = productDaoImpl.executeHQLSelect(PB_MAX_NOW, null,null, false);
+	    Object maxObjPB = pbMax.get(0);
+	    if (maxObjPB != null){
+	    	Timestamp maxTime = (Timestamp)maxObjPB;
+	    	
+		    //获取千禧比这个大的
+	    	DetachedCriteria criteria9 = DetachedCriteria.forClass(ProductBarcode2.class);
+	    	criteria9.add(Restrictions.gt("createDate", maxTime));
+	    	criteria9.add(Restrictions.isNull("chainId"));
+	    	criteria9.addOrder(Order.asc("createDate"));
+	    	List<ProductBarcode2> products =  productBarcodeDaoImpl2.getByCritera(criteria9, false);
+		    
+	    	
+	    	if (products != null && products.size() > 0){
+	    		for (ProductBarcode2 product2 : products){
+	    			
+	    			//product 不存在就掠过
+	    			String serialNum = String.valueOf(product2.getProductId());
+	    			Product product = productDaoImpl.getBySerialNum(serialNum, null);
+	    			
+	    			if (product == null){
+	    				loggerLocal.warnB("skip , 主产品信息没有找到  : " + randomNum+ " " + product2.toString());
+	    				continue;
+	    			} else {	
+	    				String barcode2 = product2.getBarcode();
+	    				ProductBarcode pb = productBarcodeDaoImpl.getByBarcode(barcode2);
+	    				
+	    				if (pb == null){
+	                        Integer chainId = product2.getChainId();
+	                        Integer colorId = product2.getColorId();
+	                        //Integer sizeId = product2.getSizeId();
+	                        
+	                        Color color = null;
+	                        if (chainId != null){
+			    				loggerLocal.errorB(" 无法导入 ,不能导入连锁店条码 ： " + randomNum+ " " + product2);
+			    				continue;
+	                        }
+	   
+	                        if (colorId != null){
+	                        	color = colorDaoImpl.get(colorId, true);
+	                        	if (color == null){
+	    		    				loggerLocal.errorB(" 无法导入 ,颜色导入出现问题 ： " + randomNum+ " " + product2);
+	    		    				continue;
+	                        	}
+	                        }
+	                        
+	                        //查询这个条码是否已经输入
+			    			
+			    			pb = new ProductBarcode();
+			    			BeanUtils.copyProperties(product2,pb);
+			    			pb.setChainStore(null);
+			    			pb.setColor(color);
+			    			pb.setProduct(product);
+							try {
+							  loggerLocal.infoB(" 新插入条码 ： " + randomNum+ " " + pb);
+							  productBarcodeDaoImpl.save(pb, true);
+							} catch (Exception e){
+								loggerLocal.errorB(" 新插入条码失败 ： " + randomNum+ " " + pb);
+								e.printStackTrace();
+							}
+	    				} else {
+	    					Integer colorId = product2.getColorId();
+	    					Color color = null;
+	                        if (colorId != null){
+	                        	color = colorDaoImpl.get(colorId, true);
+	                        	if (color == null){
+	    		    				loggerLocal.errorB(" 无法导入 ,颜色导入出现问题 ： " + randomNum+ " " + product2);
+	    		    				continue;
+	                        	}
+	                        }
+	                        
+	                        pb.setColor(color);
+	                        pb.setCreateDate(product2.getCreateDate());
+	                        pb.setStatus(product2.getStatus());
+							try {
+		                        loggerLocal.infoB(" 更新条码 ： " + randomNum+ " " + pb);
+		                        productBarcodeDaoImpl.update(pb, true);
+							} catch (Exception e){
+								loggerLocal.errorB(" 更新条码失败 ： "+ randomNum+ " " + pb);
+								e.printStackTrace();
+							}
+	    				}
+
+					 }
+	    		}
+	    	}	
+	    }
+		loggerLocal.infoB("----------- " + randomNum+ " "+new Date() + " 完成 每小时的基本信息导入 ");
+		
 		return response;
 	}
 	

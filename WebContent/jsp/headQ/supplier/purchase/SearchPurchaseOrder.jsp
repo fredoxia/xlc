@@ -152,8 +152,8 @@ function searchOrder(){
 		      <td width="100"><s:select name="formBean.order.type" id="orderType"  list="formBean.order.typeHQMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" /></td>
 		      <td width="75"><strong>状态：</strong></td>
 		      <td width="95"><s:select name="formBean.order.status" id="orderStatus"  list="formBean.order.statusMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" />      </td>
-		      <td width="70"></td>
-		      <td width="90"> </td>
+		      <td width="70"><strong>单据摘要：</strong></td>
+		      <td width="90"><s:textfield id="comment" name="formBean.order.comment" size="7"/></td>
 		      <td width="70"> </td>
 		      <td rowspan="2"><div id="productInfo"></div></td>
 

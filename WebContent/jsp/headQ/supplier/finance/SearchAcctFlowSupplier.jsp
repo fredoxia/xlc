@@ -105,11 +105,9 @@ function downloadAcctFlow(){
 			    <tr class="InnerTableContent">
 			      <td width="45" height="25">&nbsp;</td>
 			      <td width="76"><strong>供应商</strong></td>
-			      <td width="284"><%@ include file="../SupplierInput.jsp"%>
-			      				  
-			      </td>
-			      <td width="71"></td>
-			      <td width="200"></td>
+			      <td width="284"><%@ include file="../SupplierInput.jsp"%></td>
+			      <td width="71"><strong>单据摘要</strong></td>
+			      <td width="200"><s:textfield name="formBean.order.comment" id="comment" size="8" cssClass="easyui-textbox"/></td>
 			      <td></td>
 			    </tr>				
 			    <tr class="InnerTableContent">

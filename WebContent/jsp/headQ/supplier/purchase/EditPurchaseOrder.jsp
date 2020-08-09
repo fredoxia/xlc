@@ -371,7 +371,62 @@ function submitOrderBKProcess(data){
         $.messager.alert('错误', returnMsg, 'error');
     }
 }
+function importFile(){
+	 window.open("supplierPurchaseJSP!preUploadFile",'新窗口','height=200, width=300, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, status=no');    
+}
 
+function retrieveProductByExcel(products){
+
+    if (products.length != 0){
+    	for (var i = 0 ; i < products.length; i++){
+    		var p = products[i];
+    		var barcode = p.pb;
+    		
+    		indexB = index
+    	    var str = "";
+    	    str += "<tr height='22' id='row"+ indexB + "' class='excelTable' align='center'>";
+
+    	    str += "<td align='center'>" + (indexB+1) +"</td>";
+    	    str += "<td>"+barcode.barcode +"<input type='hidden' name='formBean.order.productList["+indexB+"].pb.id' id='productId"+indexB+"' value='"+ barcode.id+"'/></td>";		 					 		
+    	    str += "<td>"+barcode.product.year.year+"</td>";	
+    	    str += "<td>"+barcode.product.quarter.quarter_Name+"</td>";	
+    	    str += "<td>"+barcode.product.brand.brand_Name+"</td>";		
+    	    str += "<td>"+barcode.product.productCode+"</td>";
+    	       
+    		var color = barcode.color;
+    		var colorName = "";
+    		if (color != null && color != undefined && color.name!=undefined)
+    			colorName = color.name; 
+    		
+    		var recCost = p.recCost;
+    		
+    	    str += "<td>" + colorName+"</td>";	
+    	    str += "<td>"+barcode.product.unit+"</td>"; 					 		
+    	    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].quantity' id='quantity"+indexB+"' value='"+barcode.product.numPerHand+"' size='2'  onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
+    	    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].recCost' id='recCost"+indexB+"' value='"+recCost+"' size='4' onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
+    	    str += "<td>"+barcode.product.wholeSalePrice+"</td>";
+    	    str += "<td><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' onclick='deleteRow(\"row"+indexB +"\","+indexB+")' style='cursor:pointer;'/></td>";
+    	    str += "<td></td>";			 		
+    	    str += "</tr>";
+    	    
+    	    $("#inventoryTable").append(str);
+
+    	    $("#row"+ indexB).bind('keyup',onkeyup);
+    	    
+    		$("#row"+ indexB).mouseover(function(){      
+    			$(this).addClass("over");}).mouseout(function(){    
+    			$(this).removeClass("over");}); 
+    		
+    		index++;
+    	    
+	       // addNewRow();
+    	}
+    	
+    	calculateTotal();
+    }
+	
+    alert("完成导入，请检查");
+}
 $(document).ready(function(){
 	$("#supplierName").focus();
 	parent.$.messager.progress('close'); 
@@ -503,7 +558,7 @@ $(document).ready(function(){
 	     </td>
 	  </tr>
       <tr height="10">
-	  	     <td>&nbsp;</td>
+	  	     <td><a id="btn1" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-database'" onclick="importFile();">导入文件</a>&nbsp;</td>
 			 <td><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="submitOrder();">单据提交</a></td>			 					 		
 			 <td></td>
 			 <td><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveToDraft();">存入草稿</a></td>			 					 		

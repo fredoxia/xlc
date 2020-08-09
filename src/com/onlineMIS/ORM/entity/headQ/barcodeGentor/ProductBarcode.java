@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductBarcode2;
 
 public class ProductBarcode implements Serializable {
 	public static final int BARCODE_LENGTH = 12;
@@ -18,14 +19,14 @@ public class ProductBarcode implements Serializable {
 	private static final long serialVersionUID = -7555848597032873392L;
 	private int id;
 	private Product product = new Product();
-	private Color color;
-	private Size size;
+	private Color color = null;
+	private Size size = null;
 	private String barcode;
 	private Date createDate;
     private int boughtBefore = 0 ;
     private int inventoryLevel = 0;
     private int status = 1;
-    private ChainStore chainStore;
+    private ChainStore chainStore = null;
 
 	public ChainStore getChainStore() {
 		return chainStore;
@@ -50,6 +51,8 @@ public class ProductBarcode implements Serializable {
 		
 	}
 	
+
+
 	public int getInventoryLevel() {
 		return inventoryLevel;
 	}

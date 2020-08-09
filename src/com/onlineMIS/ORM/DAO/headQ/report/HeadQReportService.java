@@ -1158,10 +1158,10 @@ public class HeadQReportService {
 	 * @return
 	 */
 	@Transactional
-	public Response downloadSupplierAcctFlow(String excelPath, Date startDate, Date endDate, int supplierId) {
+	public Response downloadSupplierAcctFlow(String excelPath, Date startDate, Date endDate, int supplierId, String comment) {
 		Response response = new Response();
 
-		response = financeSupplierService.searchAcctFlow(startDate, endDate, supplierId);
+		response = financeSupplierService.searchAcctFlow(startDate, endDate, supplierId, comment);
 	
 		Map<String, List> data = (Map)response.getReturnValue();
 		List<SupplierAcctFlowReportItem> items = (List<SupplierAcctFlowReportItem>)data.get("rows");

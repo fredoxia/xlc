@@ -111,4 +111,12 @@ public class SupplierPurchaseJSPAction extends SupplierPurchaseAction {
 		
 		return "editPurchase";
 	}
+	
+	/**
+	 * 准备采购订单导入
+	 * @return
+	 */
+	public String preUploadFile(){
+		return "preUploadFile";
+	}
 }

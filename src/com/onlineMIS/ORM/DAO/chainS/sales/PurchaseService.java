@@ -2,6 +2,7 @@ package com.onlineMIS.ORM.DAO.chainS.sales;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -43,10 +44,14 @@ import com.onlineMIS.ORM.entity.chainS.user.ChainStore;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderTemplate;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderVO;
+import com.onlineMIS.ORM.entity.headQ.inventory.JinSuanOrderTemplate;
+import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrder;
+import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrderProduct;
 import com.onlineMIS.action.chainS.sales.PurchaseActionFormBean;
 import com.onlineMIS.action.chainS.sales.PurchaseActionUIBean;
 import com.onlineMIS.common.Common_util;
@@ -548,5 +553,7 @@ public class PurchaseService {
 		}
 		
 	}
+
+ 
 	
 }

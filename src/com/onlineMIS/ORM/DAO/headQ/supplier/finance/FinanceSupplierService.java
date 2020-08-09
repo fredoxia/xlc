@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
@@ -24,6 +25,7 @@ import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.AreaDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.BrandDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.CategoryDaoImpl;
+import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ColorDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.QuarterDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.YearDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.supplier.finance.sorter.FinanceSummaryRptVOElesSorter;
@@ -36,7 +38,9 @@ import com.onlineMIS.ORM.entity.chainS.report.ChainReport;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Area;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Brand;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Category;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
+import com.onlineMIS.ORM.entity.headQ.barcodeGentor.ProductBarcode;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Quarter;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Year;
 import com.onlineMIS.ORM.entity.headQ.custMgmt.HeadQCust;
@@ -101,6 +105,8 @@ public class FinanceSupplierService {
 	private QuarterDaoImpl quarterDaoImpl;
 	@Autowired
 	private BrandDaoImpl brandDaoImpl;
+	@Autowired
+	private ColorDaoImpl colorDaoImpl;
 	@Autowired
 	private CategoryDaoImpl categoryDaoImpl;
 	/**
@@ -169,147 +175,7 @@ public class FinanceSupplierService {
 	 * @return
 	 */
 	public Response saveFBToDraft(FinanceBillSupplier financeBill, UserInfor user) {
-		
-    	//2. 更新product
-	    String PRODUCT_MAX_NOW = "SELECT MAX(createDate) FROM Product WHERE LENGTH(serial_number) < 8";
-	    List<Object> productMax = productDaoImpl.executeHQLSelect(PRODUCT_MAX_NOW, null,null, false);
-	    Object maxObj = productMax.get(0);
-	    if (maxObj != null){
-	    	Timestamp maxTime = (Timestamp)maxObj;
-	    	
-		    //获取千禧比这个大的
-	    	DetachedCriteria criteria2 = DetachedCriteria.forClass(Product2.class);
-	    	criteria2.add(Restrictions.gt("createDate", maxTime));
-	    	criteria2.add(Restrictions.isNull("chainId"));
-	    	List<Product2> products =  productDaoImpl2.getByCritera(criteria2, false);
-		    
-	    	
-	    	if (products != null && products.size() > 0){
-	    		for (Product2 product2 : products){
-	    			
-	    			//是2019年以前的条码略过
-	    			if (product2.getYearId() < 9){
-	    				loggerLocal.warnB("skip : " + product2.toString());
-	    				continue;
-	    			} else {		    			
-		    			int areaId = product2.getAreaId();
-		    			int yearId = product2.getYearId();
-		    			int quarterId = product2.getQuarterId();
-		    			int brandId = product2.getBrandId();
-		    			int categoryId = product2.getCategoryId();
-		    			
-		    			Area area = areaDaoImpl.get(areaId, true);
-		    			Year year = yearDaoImpl.get(yearId, true);
-		    			Quarter quarter = quarterDaoImpl.get(quarterId, true);
-		    			Brand brand = brandDaoImpl.get(brandId, true);
-		    			Category category = categoryDaoImpl.get(categoryId, true);
-		    			
-		    			if (area == null || year == null || quarter == null || brand == null || category ==null){
-		    				loggerLocal.errorB(" 无法导入 ,出现基础资料null ： " + areaId + "," + yearId + "," +quarterId + "," +brandId + "," +categoryId);
-		    				continue;
-		    			} else {
-		    				Product product = new Product();
-		    				BeanUtils.copyProperties(product2,product);
-		    			    product.setArea(area);
-		    			    product.setYear(year);
-		    			    product.setQuarter(quarter);
-		    			    product.setBrand(brand);
-		    			    product.setCategory(category);
-		    				
-							String serialNum = product2.getSerialNum();
-							Product productOriginal = productDaoImpl.getBySerialNum(serialNum, null);
-							
-							if (productOriginal != null){
-								loggerLocal.infoB(product.toString());
-								BeanUtils.copyProperties(product,productOriginal);
-								productDaoImpl.update(productOriginal, true);
-							} else {
-								try {
-								productDaoImpl.save(product, true);
-								} catch (Exception e){
-									e.printStackTrace();
-								}
-							}
 
-		    			}
-	    			}
-	    		}
-	    	}	
-	    }
-	    
-	  	//3. 更新productBarcode
-	    String PB_MAX_NOW = "SELECT MAX(createDate) FROM ProductBarcode WHERE barcode like '3%'";
-	    List<Object> pbMax = productDaoImpl.executeHQLSelect(PB_MAX_NOW, null,null, false);
-	    Object maxObjPB = pbMax.get(0);
-	    if (maxObjPB != null){
-	    	Timestamp maxTime = (Timestamp)maxObjPB;
-	    	
-		    //获取千禧比这个大的
-	    	DetachedCriteria criteria2 = DetachedCriteria.forClass(ProductBarcode2.class);
-	    	criteria2.add(Restrictions.gt("createDate", maxTime));
-	    	criteria2.add(Restrictions.isNull("chainId"));
-	    	List<ProductBarcode2> products =  productBarcodeDaoImpl2.getByCritera(criteria2, false);
-		    
-	    	
-	    	if (products != null && products.size() > 0){
-	    		for (ProductBarcode2 product2 : products){
-	    			
-	    			//product 不存在就掠过
-	    			String serialNum = String.valueOf(product2.getProductId());
-	    			Product product = productDaoImpl.getBySerialNum(serialNum, null);
-	    			
-	    			if (product == null){
-	    				loggerLocal.warnB("skip : " + product2.toString());
-	    				continue;
-	    			} else {		    			
-		    			int areaId = product2.getAreaId();
-		    			int yearId = product2.getYearId();
-		    			int quarterId = product2.getQuarterId();
-		    			int brandId = product2.getBrandId();
-		    			int categoryId = product2.getCategoryId();
-		    			
-		    			Area area = areaDaoImpl.get(areaId, true);
-		    			Year year = yearDaoImpl.get(yearId, true);
-		    			Quarter quarter = quarterDaoImpl.get(quarterId, true);
-		    			Brand brand = brandDaoImpl.get(brandId, true);
-		    			Category category = categoryDaoImpl.get(categoryId, true);
-		    			
-		    			if (area == null || year == null || quarter == null || brand == null || category ==null){
-		    				loggerLocal.errorB(" 无法导入 ,出现基础资料null ： " + areaId + "," + yearId + "," +quarterId + "," +brandId + "," +categoryId);
-		    				continue;
-		    			} else {
-		    				Product product = new Product();
-		    				BeanUtils.copyProperties(product2,product);
-		    			    product.setArea(area);
-		    			    product.setYear(year);
-		    			    product.setQuarter(quarter);
-		    			    product.setBrand(brand);
-		    			    product.setCategory(category);
-		    				
-							String serialNum = product2.getSerialNum();
-							Product productOriginal = productDaoImpl.getBySerialNum(serialNum, null);
-							
-							if (productOriginal != null){
-								loggerLocal.infoB(product.toString());
-								BeanUtils.copyProperties(product,productOriginal);
-								productDaoImpl.update(productOriginal, true);
-							} else {
-								try {
-								productDaoImpl.save(product, true);
-								} catch (Exception e){
-									e.printStackTrace();
-								}
-							}
-
-		    			}
-	    			}
-	    		}
-	    	}	
-	    }
-	    
-	    
-
-    	
 		Response response = new Response();
 		int billId = financeBill.getId();
 		
@@ -534,6 +400,13 @@ public class FinanceSupplierService {
 		if (supplierId != Common_util.ALL_RECORD_NEW)
 			criteria.add(Restrictions.eq("supplier.id", supplierId));
 		
+		String comment = financeBill.getComment();
+		if (!comment.trim().equals("")){
+			if (!comment.trim().equals("")){
+				criteria.add(Restrictions.like("comment", comment, MatchMode.ANYWHERE));
+			}
+		}
+		
 		//4. set the date
 		Date startDate = Common_util.formStartDate(formBean.getSearchStartTime());
 		Date endDate = Common_util.formEndDate(formBean.getSearchEndTime());
@@ -649,7 +522,7 @@ public class FinanceSupplierService {
 		return response;
 	}
 
-	public Response searchAcctFlow(Date startDate, Date endDate, int supplierId) {
+	public Response searchAcctFlow(Date startDate, Date endDate, int supplierId, String comment) {
 		Response response = new Response();
 		List<SupplierAcctFlowReportItem> rptItems = new ArrayList<SupplierAcctFlowReportItem>();
 		
@@ -660,8 +533,11 @@ public class FinanceSupplierService {
 			List<PurchaseOrder> purchaseOrders = new ArrayList<PurchaseOrder>();
 			DetachedCriteria criteria = DetachedCriteria.forClass(PurchaseOrder.class,"order");
 			criteria.add(Restrictions.eq("order.status", PurchaseOrder.STATUS_COMPLETE));
-			
 			criteria.add(Restrictions.eq("order.supplier.id", supplierId));
+			
+			if (!comment.trim().equals("")){
+				criteria.add(Restrictions.like("order.comment", comment, MatchMode.ANYWHERE));
+			}
 	
 			startDate  = Common_util.formStartDate(startDate);
 			endDate = Common_util.formEndDate(endDate);
@@ -676,6 +552,10 @@ public class FinanceSupplierService {
 			criteria2.add(Restrictions.eq("status", FinanceBill.STATUS_COMPLETE));
 			criteria2.add(Restrictions.eq("supplier.id", supplierId));
 
+			if (!comment.trim().equals("")){
+				criteria2.add(Restrictions.like("comment", comment, MatchMode.ANYWHERE));
+			}
+			
 			criteria2.add(Restrictions.between("createDate", startDate, endDate));
 			List<FinanceBillSupplier> financeBills = financeBillSupplierDaoImpl.getByCritera(criteria2, true);
 			

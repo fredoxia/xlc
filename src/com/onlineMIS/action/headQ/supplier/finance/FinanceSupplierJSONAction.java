@@ -176,11 +176,12 @@ public class FinanceSupplierJSONAction extends FinanceSupplierAction {
 		Date startDate = Common_util.formStartDate(formBean.getSearchStartTime());
 		Date endDate = Common_util.formEndDate(formBean.getSearchEndTime());
 		int supplierId = formBean.getOrder().getSupplier().getId();
+		String comment = formBean.getOrder().getComment();
 		
 		Response response = new Response();
 		
 		try {
-			response = financeSupplierService.searchAcctFlow(startDate, endDate, supplierId);
+			response = financeSupplierService.searchAcctFlow(startDate, endDate, supplierId, comment);
 		} catch (Exception e) {
 			response.setQuickValue(Response.FAIL, e.getMessage());
 		}

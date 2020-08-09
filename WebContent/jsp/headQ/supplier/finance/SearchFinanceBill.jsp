@@ -107,7 +107,8 @@ $(document).ready(function(){
 						    </tr>
 						    <tr class="InnerTableContent">
 		                       <td height="25">&nbsp;</td>
-		                       <td colspan="2">&nbsp;</td>
+		                       <td>单据摘要</td>
+		                       <td><s:textfield id="comment" name="formBean.order.comment" /></td>
 		                       <td><strong>单据种类</strong></td>
 		                       <td><s:select name="formBean.order.type"  list="formBean.order.typeHQMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" /></td>
 		                       <td>&nbsp;</td>

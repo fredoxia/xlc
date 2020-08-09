@@ -210,7 +210,7 @@ public class HeadQReportJSPAction extends HeadQReportAction {
 
 		Response response = new Response();
 		try {
-		     response = headQReportService.downloadSupplierAcctFlow(contextPath + "WEB-INF\\template\\headQ", formBean.getSearchStartTime(), formBean.getSearchEndTime(), formBean.getOrder().getSupplier().getId());
+		     response = headQReportService.downloadSupplierAcctFlow(contextPath + "WEB-INF\\template\\headQ", formBean.getSearchStartTime(), formBean.getSearchEndTime(), formBean.getOrder().getSupplier().getId(), formBean.getOrder().getComment());
 		} catch (Exception e) {
 			response.setReturnCode(Response.FAIL);
 			response.setMessage(e.getMessage());

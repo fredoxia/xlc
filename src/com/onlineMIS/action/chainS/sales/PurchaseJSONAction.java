@@ -1,5 +1,6 @@
 package com.onlineMIS.action.chainS.sales;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,9 @@ import net.sf.json.JsonConfig;
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.entity.chainS.user.ChainUserInfor;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
+import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
+import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrder;
+import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrderProduct;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
 import com.onlineMIS.converter.JSONUtilDateConverter;
@@ -23,6 +27,7 @@ public class PurchaseJSONAction extends PurchaseAction {
 	private static final long serialVersionUID = -2414126206232576165L;
 	private JSONObject jsonObject;
 	private Map<String,Object> jsonMap = new HashMap<String, Object>();
+	
 
 	public JSONObject getJsonObject() {
 		return jsonObject;
@@ -111,5 +116,7 @@ public class PurchaseJSONAction extends PurchaseAction {
 			}
 		return SUCCESS;
 	}
+	
+
 
 }

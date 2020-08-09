@@ -112,10 +112,10 @@ function saveOrderBackProcess(data){
         var returnValue = response.returnValue;
         var inventoryOrder = returnValue.inventoryOrder;
        
-        if (inventoryOrder != null && inventoryOrder != ""){
+        /*if (inventoryOrder != null && inventoryOrder != ""){
         	printContent(inventoryOrder, true);
         	printContent(inventoryOrder, true);
-        }
+        }*/
         setTimeout(function(){ window.location.href = "<%=request.getContextPath()%>/action/inventoryOrder!create";}, 3000);
         
 	}
@@ -264,11 +264,7 @@ $(document).ready(function(){
 	  	     <td>&nbsp;</td>
 			 <td>
 			      <a id="btn1" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-database'" onclick="importFile();">导入文件</a>&nbsp;
-			 	  <a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="iconCls:'icon-save',menu:'#mm',plain:false,onClick:submitOrder">单据提交</a>
-					<div id="mm" style="width:150px;">
-					    <div data-options="iconCls:'icon-save',name:'price'" onclick="javascript:submitOrder()">打印价格单</div>
-					    <div data-options="iconCls:'icon-save',name:'quantity'" onclick="javascript:submitOrderQ()">打印数量单</div>
-					</div>
+			 	  <a href="#" id="mb" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="javascript:submitOrder()">单据提交</a>
 			 
 			 </td>			 					 		
 			 <td>&nbsp;</td>
@@ -281,11 +277,7 @@ $(document).ready(function(){
 	  <tr height="10">
 	  	     <td>&nbsp;</td>
 			 <td><a id="btn1" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-database'" onclick="importFile();">导入文件</a>&nbsp; 
-			 	  <a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="iconCls:'icon-save',menu:'#mm',plain:false,onClick:submitOrder">单据提交</a>
-					<div id="mm" style="width:150px;">
-					    <div data-options="iconCls:'icon-print',name:'price'" onclick="javascript:submitOrder()">打印价格单</div>
-					    <div data-options="iconCls:'icon-print',name:'quantity'" onclick="javascript:submitOrderQ()">打印数量单</div>
-					</div>			 
+			 	  <a href="#" id="mb" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="javascript:submitOrder()">单据提交</a>			 
 			 </td>			 					 		
 			 <td>&nbsp;</td>
 			 <td><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveToDraft();">存入草稿</a>
@@ -298,11 +290,8 @@ $(document).ready(function(){
 	  <tr height="10">
 	  	     <td>&nbsp;</td>
 			 <td><a id="btn1" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-database'" onclick="importFile();">导入文件</a>&nbsp;
-			     	<a href="javascript:void(0)" id="mb" class="easyui-menubutton" data-options="iconCls:'icon-save',menu:'#mm',plain:false,onClick:submitOrder">单据提交</a>
-					<div id="mm" style="width:150px;">
-					    <div data-options="iconCls:'icon-print',name:'price'" onclick="javascript:submitOrder()">打印价格单</div>
-					    <div data-options="iconCls:'icon-print',name:'quantity'" onclick="javascript:submitOrderQ()">打印数量单</div>
-					</div>
+			     	<a href="#" id="mb" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="javascript:submitOrder()">单据提交</a>
+
 			 </td>			 					 		
 			 <td><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="exportBarcodeToExcel();">条码标签导出</a></td>
 			 <td><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveToDraft();">存入草稿</a><a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-sum'" onclick="calculateTotal();">重新计算</a></td>			 					 		

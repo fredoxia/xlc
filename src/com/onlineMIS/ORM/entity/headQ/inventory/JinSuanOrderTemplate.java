@@ -9,11 +9,12 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import org.apache.poi.ss.usermodel.Row;
 
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
+import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrder;
+import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrderProduct;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.ExcelTemplate;
 import com.onlineMIS.common.ExcelUtil;
@@ -142,6 +143,53 @@ public class JinSuanOrderTemplate  extends ExcelTemplate{
 		return order;
 	}
 	
+	/**
+	 * 转换成Purchase order object
+	 * @return
+	 */
+	public PurchaseOrder transferExcelToPurchaseOrder() {
+		PurchaseOrder order = new PurchaseOrder();
+		List<PurchaseOrderProduct> orderProducts = new ArrayList<PurchaseOrderProduct>();
+		
+		HSSFSheet sheet = templateWorkbook.getSheetAt(0);
+		int row_start = data_row;
+
+		while (true){
+			HSSFRow row  = sheet.getRow(row_start);
+			if (row == null)
+				break;
+			else {
+				HSSFCell cell = row.getCell(serial_column);
+	
+				if (cell == null)
+					break;
+				
+				String barcode = getBarcodeFromExcel(row.getCell(barcode_column));
+				loggerLocal.info("Import : " + barcode);
+				
+				int quantity = ExcelUtil.getPuzzleNum(row.getCell(quantity_column)).intValue();
+
+				double recCost = ExcelUtil.getPuzzleNum(row.getCell(wholePrice_column));
+
+				
+				PurchaseOrderProduct orderProduct = new PurchaseOrderProduct();
+				orderProduct.setQuantity(quantity);
+				//orderProduct.setSalesPrice(salesPrice);
+				orderProduct.setRecCost(recCost);
+				orderProduct.getPb().setBarcode(barcode);
+				
+				
+				orderProducts.add(orderProduct);
+				
+				row_start++;
+			}
+		}
+		
+		order.setProductList(orderProducts);
+		
+		return order;
+	}
+	
 	private String getBarcodeFromExcel(HSSFCell cell){
 		String barcode_s = "";
 		if (cell != null){
@@ -169,5 +217,6 @@ public class JinSuanOrderTemplate  extends ExcelTemplate{
 		
 		InventoryOrder order = jinSuanOrderTemplate.transferExcelToObj();
 	}
+
 
 }

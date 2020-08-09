@@ -1,5 +1,6 @@
 package com.onlineMIS.action.chainS.sales;
 
+import java.io.File;
 import java.sql.Date;
 
 import com.onlineMIS.ORM.entity.base.Pager;
@@ -17,7 +18,7 @@ public class PurchaseActionFormBean extends ChainActionFormBaseBean{
     private ChainStore chainStore;
     private InventoryOrder order = new InventoryOrder();
     private Pager pager = new Pager();
-    
+ 
 	public ChainStore getChainStore() {
 		return chainStore;
 	}

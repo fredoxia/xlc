@@ -5,13 +5,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>禧乐仓连锁店管理信息系统</title>
-<%@ include file="../../common/Style.jsp"%>
+<%@ include file="../../../common/Style.jsp"%>
 <script>
 function uploadFile(){
 	 $.ajaxFileUpload
      (
          {
-             url:'inventoryOrderUpload!uploadFile',
+             url:'supplierPurchaseJSON!uploadFile',
              secureuri:false,
              fileElementId:'orderExcel',
              dataType: 'json',
@@ -25,7 +25,7 @@ function uploadFile(){
                  else {
                 		var products = obj.products;
                 	    window.opener.retrieveProductByExcel(products);
-                	    
+                	    window.close();
                  }
                  
              },
@@ -36,13 +36,7 @@ function uploadFile(){
 
          }
      );
-	 
-	/*var exist = window.opener.validateRowInputFromChild(barcode);
-	if (exist){
-       var index_trigger = $("#index").val();
-       window.opener.retrieveProductByBarcode(index_trigger,barcode);  
-       window.close();
-	}*/
+
 }
 function parseProductValue(data){
 
@@ -52,7 +46,7 @@ function parseProductValue(data){
 </script>
 </head>
 <body>
-   <s:form action="/action/inventoryOrderJSON!uploadFile" enctype="multipart/form-data" method="POST" name="inventoryOrderForm" id="inventoryOrderForm" theme="simple">
+   <s:form action="" enctype="multipart/form-data" method="POST" name="inventoryOrderForm" id="inventoryOrderForm" theme="simple">
    <table width="100%"  align="left" class="OuterTable" id="org_table">
 	  <tr class="PBAInnerTableTitale" align='left'>
 		    <th width="19%" height="35">上传文件</th>

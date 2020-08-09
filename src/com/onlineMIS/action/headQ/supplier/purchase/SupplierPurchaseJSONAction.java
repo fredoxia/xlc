@@ -1,5 +1,6 @@
 package com.onlineMIS.action.headQ.supplier.purchase;
 
+import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.onlineMIS.ORM.entity.headQ.finance.FinanceBillItem;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.supplier.finance.FinanceBillSupplier;
 import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrder;
+import com.onlineMIS.ORM.entity.headQ.supplier.purchase.PurchaseOrderProduct;
 import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.common.Common_util;
 import com.onlineMIS.common.loggerLocal;
@@ -39,7 +41,15 @@ public class SupplierPurchaseJSONAction extends SupplierPurchaseAction {
 	private static final long serialVersionUID = -507154282584622240L;
 	protected JSONObject jsonObject;
 	protected Map<String,Object> jsonMap = new HashMap<String, Object>();
+	private String message;
 
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 	public JSONObject getJsonObject() {
 		return jsonObject;
 	}
@@ -248,6 +258,33 @@ public class SupplierPurchaseJSONAction extends SupplierPurchaseAction {
 
 		
 		return SUCCESS;
+	}
+	
+	/**
+	 * 上传精算导出的单据
+	 * @return
+	 */
+	public String uploadFile(){
+
+		PurchaseOrder order  = null;
+		try{
+			order = supplierPurchaseService.transferJinSuanToObject(formBean.getOrderExcel());
+			
+			List<PurchaseOrderProduct> orderProducts = order.getProductList();
+			
+			jsonMap.put("products", orderProducts);
+			
+			JsonConfig jsonConfig = new JsonConfig();
+			jsonConfig.setExcludes( new String[]{"order"} );
+			jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JSONUtilDateConverter());  
+			jsonObject = JSONObject.fromObject(jsonMap, jsonConfig);
+		} catch (Exception e){
+			loggerLocal.error(e);
+			jsonMap.put("error", "文件导入错误,请检查后重新导入");
+			jsonObject = JSONObject.fromObject(jsonMap);
+		}
+		message = jsonObject.toString();
+		return "successful";
 	}
 	
 }

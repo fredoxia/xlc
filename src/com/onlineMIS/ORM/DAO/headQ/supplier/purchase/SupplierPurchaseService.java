@@ -1,6 +1,9 @@
 package com.onlineMIS.ORM.DAO.headQ.supplier.purchase;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +21,7 @@ import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Color2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.NumPerHand2;
+import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductBarcode2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductUnit2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Year2;
 
@@ -26,6 +30,7 @@ import org.springframework.beans.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.aop.ThrowsAdvice;
@@ -54,6 +59,7 @@ import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistory;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistoryId;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderVO;
+import com.onlineMIS.ORM.entity.headQ.inventory.JinSuanOrderTemplate;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Category2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Color2;
@@ -112,7 +118,14 @@ public class SupplierPurchaseService {
 	
 	@Autowired
 	private HeadqPurchaseHistoryDaoImpl headqPurchaseHistoryDaoImpl;
-
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl productDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductDaoImpl2 productDaoImpl2;	
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl productBarcodeDaoImpl;
+	@Autowired
+	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductBarcodeDaoImpl2 productBarcodeDaoImpl2;	
 	/**
 	 * 获取单据信息
 	 * Action 1: edit; 2 : view
@@ -204,6 +217,7 @@ public class SupplierPurchaseService {
 	 */
 	@Transactional
 	public Response savePurchaseOrderToDraft(PurchaseOrder order, UserInfor loginUser){
+		int randomNum = 9;
 		Response response = new Response();
 
 		try {
@@ -698,6 +712,11 @@ public class SupplierPurchaseService {
 		
 					criteria.add(Restrictions.eq("order.supplier.id", supplierId));
 				}
+				
+				String comment = formBean.getOrder().getComment().trim();
+				if (!comment.equals("")){
+					criteria.add(Restrictions.like("order.comment", comment, MatchMode.ANYWHERE));
+				}
 	
 				if (startTime != null && endTime != null){
 					Date end_date = Common_util.formEndDate(endTime);
@@ -851,6 +870,53 @@ public class SupplierPurchaseService {
 	        }
 	        
 	        return response;
+	}
+	
+	   /**
+     * 将精算excel单据转换成 purchase order 对象
+     * @param orderExcel
+     * @return
+     * @throws IOException 
+     */
+	public PurchaseOrder transferJinSuanToObject(File orderExcel) throws IOException {
+		JinSuanOrderTemplate jinSuanOrderTemplate = new JinSuanOrderTemplate(orderExcel);
+		
+		PurchaseOrder order = jinSuanOrderTemplate.transferExcelToPurchaseOrder();
+		
+		Set<String> barcodes = new HashSet<String>();
+		List<PurchaseOrderProduct> orderProducts = order.getProductList();
+		
+		//to get the barcodes and transfer to objects
+		for (PurchaseOrderProduct orderProduct: orderProducts)
+			barcodes.add(orderProduct.getPb().getBarcode());
+
+		List<ProductBarcode> ProductBarcodes = ProductBarcodeDaoImpl.getProductBarcodes(barcodes);
+		HashMap<String, ProductBarcode> proHashMap = new HashMap<String, ProductBarcode>();
+		
+		for (ProductBarcode product: ProductBarcodes){
+			proHashMap.put(product.getBarcode(), product);
+		}
+		
+		//to set the product record
+		for (PurchaseOrderProduct orderProduct: orderProducts){
+			String barcode  = orderProduct.getPb().getBarcode();
+			ProductBarcode productBarcode = proHashMap.get(barcode);
+			if (productBarcode != null){
+               // Product product = productBarcode.getProduct();
+                
+				orderProduct.setPb(productBarcode);
+				//orderProduct.setRecCost(ProductBarcodeDaoImpl.getRecCost(productBarcode));
+//	            orderProduct.setSalesPrice(product.getSalesPrice());
+	            
+	            //check whether the whole price is changed manually
+//	            calculateSalePriceDiscount(orderProduct, product);
+			} else {
+				orderProduct.setWholeSalePrice(0);
+				orderProduct.setRecCost(0);
+			}
+		}
+		
+		return order;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.onlineMIS.action.headQ.supplier.purchase;
 
+import java.io.File;
 import java.sql.Date;
 
 import com.onlineMIS.ORM.entity.base.Pager;
@@ -25,7 +26,30 @@ public class SupplierPurchaseActionFormBean extends ChainActionFormBaseBean{
     
     private Pager pager = new Pager();
     private int indicator ;
-
+    
+    //file upload
+    private File orderExcel = null;
+    private String orderExcelContentType;
+    private String orderExcelFileName;
+    
+	public File getOrderExcel() {
+		return orderExcel;
+	}
+	public void setOrderExcel(File orderExcel) {
+		this.orderExcel = orderExcel;
+	}
+	public String getOrderExcelContentType() {
+		return orderExcelContentType;
+	}
+	public void setOrderExcelContentType(String orderExcelContentType) {
+		this.orderExcelContentType = orderExcelContentType;
+	}
+	public String getOrderExcelFileName() {
+		return orderExcelFileName;
+	}
+	public void setOrderExcelFileName(String orderExcelFileName) {
+		this.orderExcelFileName = orderExcelFileName;
+	}
 	public String getProductIds() {
 		return productIds;
 	}

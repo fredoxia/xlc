@@ -65,7 +65,8 @@ public class InventoryOrderTemplate extends ExcelTemplate{
 		
 		Row headerRow2 = sheet.getRow(header_row2_ind);
 //		headerRow2.createCell(customerName_column).setCellValue(order.getCustomer_Name());
-		headerRow2.createCell(inventoryCounter_column).setCellValue(order.getOrder_Counter().getName());
+		if (order.getOrder_Counter() != null)
+		     headerRow2.createCell(inventoryCounter_column).setCellValue(order.getOrder_Counter().getName());
 		Cell inventoryDateCell = headerRow2.createCell(inventoryDate_column);
 		inventoryDateCell.setCellValue(order.getOrder_StartTime());
 		inventoryDateCell.setCellStyle(dateStyle);

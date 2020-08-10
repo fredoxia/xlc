@@ -58,6 +58,7 @@ import com.onlineMIS.ORM.entity.headQ.inventory.HeadQInventoryStore;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistory;
 import com.onlineMIS.ORM.entity.headQ.inventory.HeadQSalesHistoryId;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
+import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderVO;
 import com.onlineMIS.ORM.entity.headQ.inventory.JinSuanOrderTemplate;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2;
@@ -917,6 +918,56 @@ public class SupplierPurchaseService {
 		}
 		
 		return order;
+	}
+
+	/**
+	 * 复制Purchase order到批发销售
+	 * @param order
+	 * @param loginUserInfor
+	 * @return
+	 */
+	@Transactional
+	public Response copyPurchaseOrder2WholeSales(PurchaseOrder order,
+			UserInfor orderAuditor) {
+
+		Response response = new Response();
+		int orderId = order.getId();
+		
+		if (orderId > 0){
+			PurchaseOrder orderInDB = purchaseOrderDaoImpl.get(orderId, true);
+			purchaseOrderDaoImpl.initialize(orderInDB);
+			orderInDB.putSetToList();
+			
+			InventoryOrder wOrder = new InventoryOrder();
+			wOrder.setComment(orderInDB.getComment());
+			wOrder.setOrder_Keeper(orderAuditor);
+			wOrder.setOrder_StartTime(order.getLastUpdateTime());
+			wOrder.setOrder_Status(InventoryOrder.STATUS_DRAFT);
+			
+			List<PurchaseOrderProduct> pListp = orderInDB.getProductList();
+			List<InventoryOrderProduct> iListp = new ArrayList<InventoryOrderProduct>();
+			for (PurchaseOrderProduct pop : pListp){
+				InventoryOrderProduct iop = new InventoryOrderProduct();
+				
+				ProductBarcode pb = pop.getPb();
+				iop.setProductBarcode(pb);
+				
+				int index = pop.getIndex();
+				iop.setIndex(index);
+				
+				
+				
+			}
+			
+			
+			
+
+			response.setReturnCode(Response.SUCCESS);
+			response.setReturnValue(order.getId());
+		} else 
+			response.setReturnCode(Response.FAIL);
+		
+		return response;
 	}
 
 }

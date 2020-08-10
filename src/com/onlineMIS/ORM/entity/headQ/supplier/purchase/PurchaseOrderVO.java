@@ -22,6 +22,7 @@ public class PurchaseOrderVO {
 	private int type;
 	private String typeS;
 	private String statusS;
+	private int exportNum;
 	
 	public PurchaseOrderVO(){
 		
@@ -43,8 +44,17 @@ public class PurchaseOrderVO {
 		this.setStatus(order.getStatus());
 		this.setType(order.getType());
 		this.setTypeS(order.getTypeS());
+		this.setExportNum(order.getExportNum());
 	}
 	
+	public int getExportNum() {
+		return exportNum;
+	}
+
+	public void setExportNum(int exportNum) {
+		this.exportNum = exportNum;
+	}
+
 	public int getType() {
 		return type;
 	}

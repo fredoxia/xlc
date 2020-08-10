@@ -287,4 +287,31 @@ public class SupplierPurchaseJSONAction extends SupplierPurchaseAction {
 		return "successful";
 	}
 	
+	/**
+	 * 将订单导出到批发销售端
+	 * @return
+	 */
+	public String copyPurchaseOrder2WholeSales(){
+		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
+
+		loggerLocal.info(loginUserInfor.getUser_name() + "copyPurchaseOrder2WholeSales " +  formBean.getOrder().getId());
+
+		Response response = new Response();
+		try {
+		    response = supplierPurchaseService.copyPurchaseOrder2WholeSales(formBean.getOrder(),loginUserInfor);
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+			response.setMessage(e.getMessage());
+		}
+
+		//loggerLocal.infoR(log +"," + response.getReturnCode());
+		try{
+		    jsonObject = JSONObject.fromObject(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return SUCCESS;
+	}
+	
 }

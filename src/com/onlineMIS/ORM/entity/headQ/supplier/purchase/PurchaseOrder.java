@@ -43,6 +43,7 @@ public class PurchaseOrder extends BaseOrder {
 	private HeadQSupplier supplier;
 	private String typeS;
 	private String statusS;
+	private int exportNum = 0;
 	
     private List<PurchaseOrderProduct> productList = new ArrayList<PurchaseOrderProduct>();
     private Set<PurchaseOrderProduct> productSet = new HashSet<PurchaseOrderProduct>();
@@ -53,6 +54,12 @@ public class PurchaseOrder extends BaseOrder {
 	}
     
     
+	public int getExportNum() {
+		return exportNum;
+	}
+	public void setExportNum(int exportNum) {
+		this.exportNum = exportNum;
+	}
 	public String getTypeS() {
 		return typeHQMap.get(type);
 	}

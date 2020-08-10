@@ -94,6 +94,21 @@ function updateOrderCommentBackProcess(data){
 	else 
 		$.messager.alert('操作失败', data.message, 'error');
 }
+function copyOrderToWholeSales(){
+    var url = "<%=request.getContextPath()%>/action/supplierPurchaseJSON!copyPurchaseOrder2WholeSales";
+    var params=$("#purchaseOrderForm").serialize();  
+    $.post(url,params, copyPurchaseOrder2WholeSalesBackProcess,"json");	
+}
+function copyPurchaseOrder2WholeSalesBackProcess(data){
+    var response = data;
+	var returnCode = response.returnCode;
+
+	if (returnCode != SUCCESS)
+	    $.messager.alert('导出单据失败', response.message, 'error');
+	else {
+        $.messager.alert('导出单据成功', "导出单据成功,单据号 " + response.returnValue, 'info');
+    }	
+}
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
 });
@@ -234,7 +249,8 @@ $(document).ready(function(){
 			 <td colspan="2">
 			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="cancelOrder();">红冲单据</a>&nbsp;&nbsp;
 			     <a id="btn3" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-print'" onclick="printOrder();">打印单据</a>&nbsp;&nbsp;
-			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="copyOrder();">复制单据</a></td>			 					 		
+			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="copyOrder();">复制单据</a>	
+			     <!-- <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="copyOrderToWholeSales();">导出到批发销售</a></td>	 -->	 					 		
 			 <td></td>			 					 		
 			 <td></td>	
 	  </tr>

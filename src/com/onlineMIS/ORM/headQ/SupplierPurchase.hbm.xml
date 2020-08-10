@@ -30,7 +30,7 @@
 
         <property name="preAcctAmt" column="pre_acct_amt" type="double"/> 
         <property name="postAcctAmt" column="post_acct_amt" type="double"/> 
-
+		<property name="exportNum" column="export_num" type="integer"/>
         <many-to-one name="orderAuditor" fetch="select" column="order_auditor" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
         <many-to-one name="orderCounter" fetch="select" column="order_Counter" class="com.onlineMIS.ORM.entity.headQ.user.UserInfor" lazy="false" not-null="false"/>
         <set name="productSet" cascade="all" inverse="true" lazy="true" fetch="subselect" batch-size="10">

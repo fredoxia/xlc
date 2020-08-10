@@ -74,10 +74,6 @@ $(document).ready(function(){
 			title : '录入会计',
 			width : 60
 		}, {
-			field : 'orderCounter',
-			title : '点数人员',
-			width : 60
-		}, {
 			field : 'totalQuantity',
 			title : '总数',
 			width : 60
@@ -107,7 +103,11 @@ $(document).ready(function(){
 			field : 'statusS',
 			title : '状态',
 			width : 70
-		}, {			
+		}, {
+			field : 'exportNum',
+			title : '导出次数',
+			width : 50
+		}, {	
 			field : 'action',
 			title : '查看/修改',
 			width : 70,

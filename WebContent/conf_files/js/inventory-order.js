@@ -450,14 +450,14 @@ function validateForm(){
 		error += "单据输入人员 - 必须选!<br\>";
 		$("#keeper_id").focus();
 	}
-	if ($("#scanner_id").val() == 0){
+	/*if ($("#scanner_id").val() == 0){
 		error += "扫描人员 - 必须选!<br\>";
 		$("#scanner_id").focus();
 	}
 	if ($("#counter_id").val() == 0){
 		error += "点数人员 - 必须选!<br\>";
 		$("#counter_id").focus();
-	}
+	}*/
 
 	if ($("#totalQuantity").val() <= 0){
 		error += "必须录入数据后才能输入<br\>";

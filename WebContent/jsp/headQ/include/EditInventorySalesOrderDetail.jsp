@@ -21,10 +21,10 @@
 			 		<th width="15%">&nbsp;</th>
 			 		<th width="5%" align="right">单据输入&nbsp; :</th>   		
 			 		<th width="8%" align="left"><s:select name="formBean.order.order_Keeper.user_id" id="keeper_id"  list="uiBean.users" listKey="user_id" listValue="name" headerKey="0" headerValue="" /></th>
-			 		<th width="5%" align="right">货品扫描&nbsp; :</th>
-			 		<th width="8%" align="left"> <s:select name="formBean.order.order_scanner.user_id" id="scanner_id"  list="uiBean.users" listKey="user_id" listValue="name" headerKey="0" headerValue="" /></th>
-			 		<th width="5%" align="right">货品点数&nbsp; :</th>
-			 		<th width="5%" align="left"><s:select name="formBean.order.order_Counter.user_id" id="counter_id"  list="uiBean.users" listKey="user_id" listValue="name" headerKey="0" headerValue="" /></th>       
+			 		<th width="5%" align="right"></th>
+			 		<th width="8%" align="left"> </th>
+			 		<th width="5%" align="right"></th>
+			 		<th width="5%" align="left"></th>       
 			 		<th width="4%" align="right">下欠 :</th>		 					 				 					 		
 			 		<th align="left"><s:textfield name="formBean.order.postAcctAmt" id="postAcct" size="6" readonly="true"/></th>	
 			 		<th width="15%" align="left">

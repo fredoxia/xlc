@@ -47,13 +47,14 @@ public class InventoryOrderJSONAction extends InventoryOrderAction {
 		} else if (formBean.getOrder().getOrder_Keeper() == null){
 			addFieldError("orderKeeper.empty", "订单输入人员必填");
 			return INPUT;
-		} else if (formBean.getOrder().getOrder_Counter() == null){
-			addFieldError("orderCounter.empty", "订单点数人员必填");
-			return INPUT;
-		} else if (formBean.getOrder().getOrder_scanner() == null){
-			addFieldError("orderScanner.empty", "订单扫描人员必填");
-			return INPUT;
 		} 
+//		else if (formBean.getOrder().getOrder_Counter() == null){
+//			addFieldError("orderCounter.empty", "订单点数人员必填");
+//			return INPUT;
+//		} else if (formBean.getOrder().getOrder_scanner() == null){
+//			addFieldError("orderScanner.empty", "订单扫描人员必填");
+//			return INPUT;
+//		} 
 		UserInfor loginUserInfor = (UserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_USER);
 		
 		

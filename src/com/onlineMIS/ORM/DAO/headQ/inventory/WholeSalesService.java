@@ -1398,7 +1398,8 @@ public class WholeSalesService {
 					break;
 				case InventoryOrder.STATUS_PDA_COMPLETE:
 					order = editPDAComplete(orderId, loginUserInfor);
-					preAcct = calculatePreAcctBalance(order.getCust().getId());	
+					if (order.getCust() != null)
+					     preAcct = calculatePreAcctBalance(order.getCust().getId());	
 					order.setPreAcctAmt(preAcct);
 					response.setReturnValue(order);
 					response.setAction(1);
@@ -1422,7 +1423,8 @@ public class WholeSalesService {
 					if (keeper.getUser_id() != loginUserInfor.getUser_id()){
 						response.setQuickValue(Response.FAIL, "单据 正在被 " + keeper.getName() + " 修改,你暂时无法修改");
 					} else {
-						preAcct = calculatePreAcctBalance(order.getCust().getId());			
+						if (order.getCust() != null)
+						    preAcct = calculatePreAcctBalance(order.getCust().getId());			
 						order.setPreAcctAmt(preAcct);
 						order.setPostAcctAmt(postAcct);
 					    response.setAction(1);
@@ -1438,7 +1440,8 @@ public class WholeSalesService {
 						order.setOrder_Auditor(loginUserInfor);
 						inventoryOrderDAOImpl.update(order, true);
 						
-						preAcct = calculatePreAcctBalance(order.getCust().getId());	
+						if (order.getCust() != null)
+						     preAcct = calculatePreAcctBalance(order.getCust().getId());	
 						postAcct = calculatePostAcctBalance(order, preAcct);
 						order.setPreAcctAmt(preAcct);
 						order.setPostAcctAmt(postAcct);
@@ -1449,7 +1452,8 @@ public class WholeSalesService {
 					} else if (auditor2.getUser_id() != loginUserInfor.getUser_id()){
 						response.setQuickValue(Response.FAIL, "单据 正在被 " + auditor2.getName() + " 修改,你暂时无法修改");
 					} else {
-						preAcct = calculatePreAcctBalance(order.getCust().getId());			
+						if (order.getCust() != null)
+						     preAcct = calculatePreAcctBalance(order.getCust().getId());			
 						postAcct = calculatePostAcctBalance(order, preAcct);
 						order.setPreAcctAmt(preAcct);
 						order.setPostAcctAmt(postAcct);

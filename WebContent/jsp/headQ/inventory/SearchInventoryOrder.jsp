@@ -73,10 +73,10 @@ $(document).ready(function(){
 			title : '过账时间',
 			width : 125
 		}, {
-			field : 'PDAUserName',
+/*			field : 'PDAUserName',
 			title : 'PDA录入',
 			width : 70
-		}, {
+		}, {*/
 			field : 'keeperName',
 			title : '仓库录入',
 			width : 70
@@ -87,7 +87,7 @@ $(document).ready(function(){
 		}, {			
 			field : 'totalQ',
 			title : '总数',
-			width : 80
+			width : 60
 		}, {
 			field : 'totalWholeSales',
 			title : '批发总额',
@@ -98,7 +98,7 @@ $(document).ready(function(){
 		}, {
 			field : 'comment',
 			title : '备注',
-			width : 150
+			width : 200
 		}, {
 			field : 'process',
 			title : '单据进程',
@@ -106,7 +106,7 @@ $(document).ready(function(){
 		}, {
 			field : 'orderType',
 			title : '单据类型',
-			width : 90
+			width : 80
 		}, {					
 			field : 'action',
 			title : '查看/修改',

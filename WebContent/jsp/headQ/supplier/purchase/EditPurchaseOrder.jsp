@@ -399,10 +399,11 @@ function retrieveProductByExcel(products){
     			colorName = color.name; 
     		
     		var recCost = p.recCost;
+    		var quantity = p.quantity;
     		
     	    str += "<td>" + colorName+"</td>";	
     	    str += "<td>"+barcode.product.unit+"</td>"; 					 		
-    	    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].quantity' id='quantity"+indexB+"' value='"+barcode.product.numPerHand+"' size='2'  onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
+    	    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].quantity' id='quantity"+indexB+"' value='"+quantity+"' size='2'  onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
     	    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].recCost' id='recCost"+indexB+"' value='"+recCost+"' size='4' onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
     	    str += "<td>"+barcode.product.wholeSalePrice+"</td>";
     	    str += "<td><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' onclick='deleteRow(\"row"+indexB +"\","+indexB+")' style='cursor:pointer;'/></td>";

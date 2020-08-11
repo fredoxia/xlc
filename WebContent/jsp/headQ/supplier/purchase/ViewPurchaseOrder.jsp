@@ -250,7 +250,7 @@ $(document).ready(function(){
 			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="cancelOrder();">红冲单据</a>&nbsp;&nbsp;
 			     <a id="btn3" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-print'" onclick="printOrder();">打印单据</a>&nbsp;&nbsp;
 			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="copyOrder();">复制单据</a>	
-			     <!-- <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="copyOrderToWholeSales();">导出到批发销售</a></td>	 -->	 					 		
+			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="copyOrderToWholeSales();">导出到批发销售</a></td>	 					 		
 			 <td></td>			 					 		
 			 <td></td>	
 	  </tr>

@@ -42,6 +42,7 @@ import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.inventory.HeadQInventoryStockDAOImpl;
+import com.onlineMIS.ORM.DAO.headQ.inventory.WholeSalesService;
 import com.onlineMIS.ORM.DAO.headQ.supplier.finance.SupplierAcctFlowDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.supplier.supplierMgmt.HeadQSupplierDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.user.UserInforDaoImpl;
@@ -127,6 +128,8 @@ public class SupplierPurchaseService {
 	private com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl productBarcodeDaoImpl;
 	@Autowired
 	private com.onlineMIS.ORM.DAO.headQ.qxbabydb.ProductBarcodeDaoImpl2 productBarcodeDaoImpl2;	
+	@Autowired
+	private WholeSalesService wholeSalesService;
 	/**
 	 * 获取单据信息
 	 * Action 1: edit; 2 : view
@@ -633,9 +636,10 @@ public class SupplierPurchaseService {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		
 		ProductBarcode productBarcode = ProductBarcodeDaoImpl.getByBarcode(barcode);
+		productDaoImpl.evict(productBarcode.getProduct());
 		if (productBarcode!= null && productBarcode.getStatus() == ProductBarcode.STATUS_OK){
                 if (orderType == PurchaseOrder.TYPE_PURCHASE || orderType == PurchaseOrder.TYPE_FREE){
-					
+					productBarcode.getProduct().setWholeSalePrice(ProductBarcodeDaoImpl.getWholeSalePrice(productBarcode));
 					dataMap.put("barcode", productBarcode);
 					dataMap.put("orderType", orderType);
 					dataMap.put("index", indexPage);
@@ -935,37 +939,78 @@ public class SupplierPurchaseService {
 		
 		if (orderId > 0){
 			PurchaseOrder orderInDB = purchaseOrderDaoImpl.get(orderId, true);
-			purchaseOrderDaoImpl.initialize(orderInDB);
-			orderInDB.putSetToList();
 			
-			InventoryOrder wOrder = new InventoryOrder();
-			wOrder.setComment(orderInDB.getComment());
-			wOrder.setOrder_Keeper(orderAuditor);
-			wOrder.setOrder_StartTime(order.getLastUpdateTime());
-			wOrder.setOrder_Status(InventoryOrder.STATUS_DRAFT);
-			
-			List<PurchaseOrderProduct> pListp = orderInDB.getProductList();
-			List<InventoryOrderProduct> iListp = new ArrayList<InventoryOrderProduct>();
-			for (PurchaseOrderProduct pop : pListp){
-				InventoryOrderProduct iop = new InventoryOrderProduct();
+			//采购入库单的导入
+			if (orderInDB.getType() == PurchaseOrder.TYPE_PURCHASE){
 				
-				ProductBarcode pb = pop.getPb();
-				iop.setProductBarcode(pb);
+				if (orderInDB.getStatus() != PurchaseOrder.STATUS_COMPLETE){
+					response.setFail("只能导出完成状态的采购单据");
+					return response;
+				}
 				
-				int index = pop.getIndex();
-				iop.setIndex(index);
-				
-				
-				
-			}
-			
-			
-			
-
-			response.setReturnCode(Response.SUCCESS);
-			response.setReturnValue(order.getId());
+				try {
+					purchaseOrderDaoImpl.initialize(orderInDB);
+					orderInDB.putSetToList();
+					
+					InventoryOrder wOrder = new InventoryOrder();
+					wOrder.setComment("导入 " + orderInDB.getComment());
+					wOrder.setOrder_Keeper(orderAuditor);
+					wOrder.setOrder_StartTime(order.getLastUpdateTime());
+					wOrder.setOrder_Status(InventoryOrder.STATUS_DRAFT);
+					wOrder.setCust(null);
+					wOrder.setOrder_type(InventoryOrder.TYPE_SALES_ORDER_W);
+					
+					List<PurchaseOrderProduct> pListp = orderInDB.getProductList();
+					List<InventoryOrderProduct> iListp = new ArrayList<InventoryOrderProduct>();
+					for (PurchaseOrderProduct pop : pListp){
+						InventoryOrderProduct iop = new InventoryOrderProduct();
+						
+						ProductBarcode pb = pop.getPb();
+						iop.setProductBarcode(pb);
+						
+						int index = pop.getIndex();
+						iop.setIndex(index);
+						
+						iop.setQuantity(pop.getQuantity());
+						
+						double selectPrice = ProductBarcodeDaoImpl.getSelectedSalePrice(pb);
+						double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pb);
+						double discount = 1;
+						if (selectPrice == pb.getProduct().getSalesPriceFactory()){
+							discount = pb.getProduct().getDiscount();
+						}
+						
+						iop.setDiscount(discount);
+						iop.setSalePriceSelected(selectPrice);
+						iop.setWholeSalePrice(wholePrice);
+						
+						iop.setOrder(wOrder);
+						
+						iListp.add(iop);
+					}
+					
+					wOrder.setProduct_List(iListp);
+					wOrder.putListToSet();
+					
+					wholeSalesService.saveToDraft(wOrder, "false");
+					
+					int exportNum = orderInDB.getExportNum();
+					exportNum++;
+					String hql = "UPDATE PurchaseOrder set exportNum = " + exportNum + " WHERE id = " +orderId;
+					purchaseOrderDaoImpl.executeHQLUpdateDelete(hql, null, true);
+		
+					response.setReturnCode(Response.SUCCESS);
+					response.setReturnValue(order.getId());
+				} catch (Exception e){
+					loggerLocal.error("导出采购单据到批发销售出现问题 : " + orderId);
+					loggerLocal.error(e);
+					
+					response.setFail("导出单据发生错误 : " + orderId + " , " + e.getMessage());
+				}
+			} else 
+				response.setQuickValue(Response.WARNING, "该功能暂时只支持采购入库单的导出到批发销售端");
 		} else 
-			response.setReturnCode(Response.FAIL);
+			response.setQuickValue(Response.FAIL,"采购单据无法找到");
 		
 		return response;
 	}

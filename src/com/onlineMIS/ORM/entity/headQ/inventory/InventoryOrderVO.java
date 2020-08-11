@@ -50,7 +50,8 @@ public class InventoryOrderVO {
 	
 	public InventoryOrderVO(InventoryOrder i){
 		this.setId(i.getOrder_ID());
-		this.setClientName(i.getCust().getName() + " " + i.getCust().getArea());
+		if (i.getCust() != null)
+		   this.setClientName(i.getCust().getName() + " " + i.getCust().getArea());
 		this.setStartTime(i.getOrder_StartTime());
 		this.setCompleteTime(i.getOrder_EndTime());
 		if (i.getPdaScanner() != null)

@@ -57,7 +57,8 @@ public class InventoryOrderTemplate extends ExcelTemplate{
 
 		//write header information
 		Row headerRow1 = sheet.getRow(header_row1_ind);
-		headerRow1.createCell(customerArea_column).setCellValue(order.getCust().getName() + " " + order.getCust().getArea());
+		if (order.getCust() != null)
+		     headerRow1.createCell(customerArea_column).setCellValue(order.getCust().getName() + " " + order.getCust().getArea());
 		headerRow1.createCell(inventoryKeeper_column).setCellValue(order.getOrder_Keeper().getName());
 		
 		if (order.getOrder_Auditor() != null)

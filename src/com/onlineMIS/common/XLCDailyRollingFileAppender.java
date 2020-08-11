@@ -5,7 +5,7 @@ import java.io.File;
 import org.apache.log4j.DailyRollingFileAppender;
 
 
-public class QXBabyDailyRollingFileAppender extends DailyRollingFileAppender {
+public class XLCDailyRollingFileAppender extends DailyRollingFileAppender {
 
 	    @Override
 	    public void setFile(String file) {

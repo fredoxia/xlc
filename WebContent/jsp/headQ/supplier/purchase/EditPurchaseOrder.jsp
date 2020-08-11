@@ -191,7 +191,7 @@ function addNewRow(barcode){
     str += "<td>"+barcode.product.unit+"</td>"; 					 		
     str += "<td><input type='text' name='formBean.order.productList["+indexB+"].quantity' id='quantity"+indexB+"' value='"+barcode.product.numPerHand+"' size='2'  onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
     str += "<td><input type='text' name='formBean.order.productList["+indexB+"].recCost' id='recCost"+indexB+"' value='"+recCost+"' size='4' onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
-    str += "<td>"+barcode.product.wholeSalePrice+"</td>";
+    str += "<td>"+(barcode.product.wholeSalePrice).toFixed(2)+"</td>";
     str += "<td><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' onclick='deleteRow(\"row"+indexB +"\","+indexB+")' style='cursor:pointer;'/></td>";
     str += "<td></td>";			 		
     str += "</tr>";

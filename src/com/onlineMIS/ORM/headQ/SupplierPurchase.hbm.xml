@@ -10,6 +10,8 @@
         <property name="index" column="indexNum" type="integer"/>
         <property name="wholeSalePrice" column="whole_sale_price" type="double"/>
         <property name="recCost" column="rec_cost" type="double"/>
+        <property name="price" column="price" type="double"/>
+        <property name="discount" column="discount" type="double"/>
     </class>
     
     <class name="PurchaseOrder" table="purchase_order"  batch-size="15">

@@ -15,8 +15,22 @@ public class PurchaseOrderProduct extends BaseProduct{
 	private int quantity;
 	private double wholeSalePrice = 0;
 	private double recCost = 0;
+	private double price = 0;
+	private double discount =1;
 
 	
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public double getDiscount() {
+		return discount;
+	}
+	public void setDiscount(double discount) {
+		this.discount = discount;
+	}
 	public ProductBarcode getPb() {
 		return pb;
 	}

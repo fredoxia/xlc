@@ -3,7 +3,9 @@ package com.onlineMIS.ORM.DAO.headQ.supplier.purchase;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import com.onlineMIS.ORM.entity.headQ.qxbabydb.Year2;
 import org.apache.catalina.User;
 import org.springframework.beans.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
@@ -928,11 +931,13 @@ public class SupplierPurchaseService {
 	 * 复制Purchase order到批发销售
 	 * @param order
 	 * @param loginUserInfor
+	 * @param priceMode = 1 : 按照批发价导出
+	 * 		  priceMode = 2 : 按照采购价导出
 	 * @return
 	 */
 	@Transactional
 	public Response copyPurchaseOrder2WholeSales(PurchaseOrder order,
-			UserInfor orderAuditor) {
+			UserInfor orderAuditor, int priceMode) {
 
 		Response response = new Response();
 		int orderId = order.getId();
@@ -973,13 +978,31 @@ public class SupplierPurchaseService {
 						
 						iop.setQuantity(pop.getQuantity());
 						
-						double selectPrice = ProductBarcodeDaoImpl.getSelectedSalePrice(pb);
-						double wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pb);
+						double selectPrice = 0;
+						double wholePrice = 0;
 						double discount = 1;
-						if (selectPrice == pb.getProduct().getSalesPriceFactory()){
-							discount = pb.getProduct().getDiscount();
+						if (priceMode ==1 ){
+							selectPrice = ProductBarcodeDaoImpl.getSelectedSalePrice(pb);
+							wholePrice = ProductBarcodeDaoImpl.getWholeSalePrice(pb);
+							discount = 1;
+							if (selectPrice == pb.getProduct().getSalesPriceFactory()){
+								discount = pb.getProduct().getDiscount();
+							}
+						} else if (priceMode == 2){
+							//如果这张采购单的选择价为空，就需要根据默认选择价计算
+							if (pop.getPrice() == 0){
+							    selectPrice = ProductBarcodeDaoImpl.getSelectedSalePrice(pb);
+								discount = wholePrice/selectPrice;
+								BigDecimal b = new BigDecimal(discount);  
+								discount = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+							} else {
+								//不为空，就直接用采购单的价格
+								selectPrice = pop.getPrice();
+								discount = pop.getDiscount();
+							}
+								
+							wholePrice = pop.getRecCost();
 						}
-						
 						iop.setDiscount(discount);
 						iop.setSalePriceSelected(selectPrice);
 						iop.setWholeSalePrice(wholePrice);

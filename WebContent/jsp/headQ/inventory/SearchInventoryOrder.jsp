@@ -176,7 +176,7 @@ function searchOrder(){
 		      <td><strong>单据号：</strong></td>
 		      <td><input name="formBean.order.order_ID" id="order_Status"  onkeypress="return is_number(event);" size="7"/></td>
 		      <td><strong>包含货品</strong></td>
-			  <td><%@ include file="../include/SearchProduct.jsp"%></td>
+			  <td><%@ include file="../include/SearchProduct.jsp"%><div id="productInfo"></div></td>
 
 		    </tr>	   
 
@@ -187,8 +187,8 @@ function searchOrder(){
 		      <td width="100"><s:select name="formBean.order.order_Status" id="order_Status"  list="uiBean.orderStatusMap" listKey="key" listValue="value" headerKey="-1" headerValue="---全部---" />      </td>
 		      <td width="90"><strong>录入会计：</strong></td>
 		      <td width="90"><s:select name="formBean.order.order_Auditor.user_id" id="accountant"  list="uiBean.users" listKey="user_id" listValue="user_name" headerKey="-1" headerValue="---全部---" />      </td>
-		      <td width="90"></td>
-			  <td rowspan="2"><div id="productInfo"></div></td>
+		      <td width="90"><strong>备注：</strong></td>
+			  <td><input name="formBean.order.comment" id="comment"  size="12"/></td>
 		    </tr>
 		
 		    <tr class="InnerTableContent">
@@ -197,7 +197,7 @@ function searchOrder(){
 		        <s:textfield id="startDate" name="formBean.search_Start_Time" cssClass="easyui-datebox"  data-options="width:100,editable:false"/> 
 		        &nbsp;至 &nbsp;
 		        <s:textfield id="endDate" name="formBean.search_End_Time" cssClass="easyui-datebox"  data-options="width:100,editable:false"/></td>
-
+				<td></td>
       	    </tr>
   			</table>
 		</s:form>

@@ -28,6 +28,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.tools.ant.types.Quantifier;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.aop.ThrowsAdvice;
@@ -347,6 +348,10 @@ public class WholeSalesService {
 				int clientid = searchBean.getCust().getId();
 	
 				criteria.add(Restrictions.eq("order.cust.id", clientid));
+			}
+			
+			if (!searchBean.getComment().trim().equals("")){
+				criteria.add(Restrictions.like("order.comment", searchBean.getComment().trim(), MatchMode.ANYWHERE));
 			}
 			
 			if (searchBean.getOrder_Auditor() != null && searchBean.getOrder_Auditor().getUser_id() != Common_util.ALL_RECORD)

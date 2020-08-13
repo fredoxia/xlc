@@ -289,6 +289,8 @@ public class SupplierPurchaseJSONAction extends SupplierPurchaseAction {
 	
 	/**
 	 * 将订单导出到批发销售端
+	 * indicator = 1 : 按照批发价导出
+	 * indicator = 2 : 按照采购价导出
 	 * @return
 	 */
 	public String copyPurchaseOrder2WholeSales(){
@@ -298,7 +300,7 @@ public class SupplierPurchaseJSONAction extends SupplierPurchaseAction {
 
 		Response response = new Response();
 		try {
-		    response = supplierPurchaseService.copyPurchaseOrder2WholeSales(formBean.getOrder(),loginUserInfor);
+		    response = supplierPurchaseService.copyPurchaseOrder2WholeSales(formBean.getOrder(),loginUserInfor, formBean.getIndicator());
 		} catch (Exception e) {
 			loggerLocal.error(e);
 			response.setReturnCode(Response.FAIL);

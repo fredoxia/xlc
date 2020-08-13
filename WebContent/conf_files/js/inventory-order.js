@@ -157,6 +157,7 @@ function backProcess(data){
         var wholeSalePrice2 = barcodes[0].product.wholeSalePrice2;
         var wholeSalePrice3 = barcodes[0].product.wholeSalePrice3;
         var salesPriceFactory = barcodes[0].product.salesPriceFactory;
+        var salesPrice = barcodes[0].product.salesPrice;
         var discount =  barcodes[0].product.discount;
         var wholeSalePrice4 = (salesPriceFactory * discount).toFixed(2);
         var choosePrice = 0;
@@ -166,6 +167,7 @@ function backProcess(data){
         var select2 = "";
         var select3 = "";
         var select4 = "";
+        var select5 = "";
 //alert(lastInputPrice+","+lastChoosePrice+","+discount);
         if (lastInputPrice >0 && lastChoosePrice>0  && discount>0){
         	wholeSalePrice = lastInputPrice;
@@ -202,6 +204,9 @@ function backProcess(data){
         	case salesPriceFactory:
             	select4 = "selected";
             	break;
+        	case salesPrice:
+            	select5 = "selected";
+            	break;            	
             default: ;
         }
 
@@ -215,7 +220,8 @@ function backProcess(data){
         $("#priceSlect" +preIndex).append("<option value='"+wholeSalePrice1+"'"+select1+">预设价1 "+wholeSalePrice1+"</option>"); 
         $("#priceSlect" +preIndex).append("<option value='"+wholeSalePrice2+"'"+select2+">预设价2 "+wholeSalePrice2+"</option>"); 
         $("#priceSlect" +preIndex).append("<option value='"+wholeSalePrice3+"'"+select3+">预设价3 "+wholeSalePrice3+"</option>"); 
-        $("#priceSlect" +preIndex).append("<option value='"+salesPriceFactory+"'"+select4+">零售价 "+salesPriceFactory+"</option>"); 
+        $("#priceSlect" +preIndex).append("<option value='"+salesPriceFactory+"'"+select4+">厂家价 "+salesPriceFactory+"</option>"); 
+        $("#priceSlect" +preIndex).append("<option value='"+salesPrice+"'"+select5+">连锁价 "+salesPrice+"</option>"); 
         
 /*        var recCost = barcodes[0].product.recCost;
         if (recCost == "")

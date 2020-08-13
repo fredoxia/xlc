@@ -168,7 +168,8 @@ public class JinSuanOrderTemplate  extends ExcelTemplate{
 				loggerLocal.info("Import : " + barcode);
 				
 				int quantity = ExcelUtil.getPuzzleNum(row.getCell(quantity_column)).intValue();
-
+				double salesPriceSelected = ExcelUtil.getPuzzleNum(row.getCell(salePrice_column));
+				double discount = ExcelUtil.getPuzzleNum(row.getCell(discount_column));
 				double recCost = ExcelUtil.getPuzzleNum(row.getCell(wholePrice_column));
 
 				
@@ -177,8 +178,9 @@ public class JinSuanOrderTemplate  extends ExcelTemplate{
 				//orderProduct.setSalesPrice(salesPrice);
 				orderProduct.setRecCost(recCost);
 				orderProduct.getPb().setBarcode(barcode);
-				
-				
+				orderProduct.setDiscount(discount);
+				orderProduct.setPrice(salesPriceSelected);
+
 				orderProducts.add(orderProduct);
 				
 				row_start++;

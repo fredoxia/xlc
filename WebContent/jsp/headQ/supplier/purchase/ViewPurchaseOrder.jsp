@@ -94,9 +94,11 @@ function updateOrderCommentBackProcess(data){
 	else 
 		$.messager.alert('操作失败', data.message, 'error');
 }
-function copyOrderToWholeSales(){
+function copyOrderToWholeSales(priceMode){
     var url = "<%=request.getContextPath()%>/action/supplierPurchaseJSON!copyPurchaseOrder2WholeSales";
     var params=$("#purchaseOrderForm").serialize();  
+    params = params + "&formBean.indicator=" + priceMode;
+
     $.post(url,params, copyPurchaseOrder2WholeSalesBackProcess,"json");	
 }
 function copyPurchaseOrder2WholeSalesBackProcess(data){
@@ -250,7 +252,12 @@ $(document).ready(function(){
 			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="cancelOrder();">红冲单据</a>&nbsp;&nbsp;
 			     <a id="btn3" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-print'" onclick="printOrder();">打印单据</a>&nbsp;&nbsp;
 			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="copyOrder();">复制单据</a>	
-			     <a id="btn2" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-redo'" onclick="copyOrderToWholeSales();">导出到批发销售</a></td>	 					 		
+			     <a href="javascript:void(0)" id="mb1" class="easyui-menubutton" data-options="iconCls:'icon-redo',menu:'#mm',plain:false">导出到批发销售</a>
+					<div id="mm" style="width:150px;">
+					    <div data-options="iconCls:'icon-redo',name:'price'" onclick="copyOrderToWholeSales(1);">批发价导出</div>
+					    <div data-options="iconCls:'icon-redo',name:'quantity'" onclick="copyOrderToWholeSales(2);">采购价导出</div>
+					</div>
+			   </td>	 					 		
 			 <td></td>			 					 		
 			 <td></td>	
 	  </tr>

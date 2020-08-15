@@ -25,7 +25,7 @@ function uploadFile(){
                  else {
                 		var products = obj.products;
                 	    window.opener.retrieveProductByExcel(products);
-                	    
+                	    window.close();
                  }
                  
              },

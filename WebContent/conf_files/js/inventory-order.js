@@ -618,6 +618,7 @@ function retrieveProductByExcel(products){
         	var yearInput = $("#year" + index);
         	var quarterInput = $("#quarter" + index);
         	var colorInput = $("#color" + index);
+        	var totalWholePriceInput = $("#totalWholeSalePrice" + index);
         	
         	barcodeInput.val(products[i].productBarcode.barcode);
         	productIdInput.val(products[i].productBarcode.id);
@@ -627,6 +628,7 @@ function retrieveProductByExcel(products){
     		quantityInput.val(products[i].quantity);
     		yearInput.val( products[i].productBarcode.product.year.year);
     		quarterInput.val( products[i].productBarcode.product.quarter.quarter_Name);
+    		totalWholePriceInput.val(products[i].totalWholeSalePrice);
     		var color = products[i].productBarcode.color;
     		if (color != null)
     		    colorInput.val( color.name);
@@ -634,17 +636,20 @@ function retrieveProductByExcel(products){
 
             var wholeSalePrice = products[i].wholeSalePrice;
             var priceSelected = products[i].salePriceSelected;
+
             var wholeSalePrice1 = products[i].productBarcode.product.wholeSalePrice;
             var wholeSalePrice2 = products[i].productBarcode.product.wholeSalePrice2;
             var wholeSalePrice3 = products[i].productBarcode.product.wholeSalePrice3;
             var salesPriceFactory = products[i].productBarcode.product.salesPriceFactory;
             var discount =  products[i].discount;
+            var salesPrice = products[i].productBarcode.product.salesPrice;
             
             //to set the whole price with the recent one
             var select1 = "";
             var select2 = "";
             var select3 = "";
             var select4 = "";
+            var select5 = "";
             
             switch (priceSelected){
             	case wholeSalePrice1:
@@ -659,6 +664,9 @@ function retrieveProductByExcel(products){
             	case salesPriceFactory:
                 	select4 = "selected";
                 	break;
+            	case salesPrice:
+                	select5 = "selected";
+                	break;                   	
                 default: alert("no price");
             }
 
@@ -671,8 +679,9 @@ function retrieveProductByExcel(products){
             $("#priceSlect" +index).append("<option value='"+wholeSalePrice1+"'"+select1+">预设价1 "+wholeSalePrice1+"</option>"); 
             $("#priceSlect" +index).append("<option value='"+wholeSalePrice2+"'"+select2+">预设价2 "+wholeSalePrice2+"</option>"); 
             $("#priceSlect" +index).append("<option value='"+wholeSalePrice3+"'"+select3+">预设价3 "+wholeSalePrice3+"</option>"); 
-            $("#priceSlect" +index).append("<option value='"+salesPriceFactory+"'"+select4+">零售价 "+salesPriceFactory+"</option>"); 
-            
+            $("#priceSlect" +index).append("<option value='"+salesPriceFactory+"'"+select4+">厂家价 "+salesPriceFactory+"</option>"); 
+            $("#priceSlect" +index).append("<option value='"+salesPrice+"'"+select5+">连锁价 "+salesPrice+"</option>"); 
+
 //            var recCost = products[i].productBarcode.product.recCost;
 //            recCostInput.val((recCost).toFixed(2));
             
@@ -686,7 +695,7 @@ function retrieveProductByExcel(products){
     	calculateTotal();
     }
 	
-    alert("完成导入，请检查");
+    $.messager.alert('完成', "完成导入，请检查", 'info');
 }
 
 

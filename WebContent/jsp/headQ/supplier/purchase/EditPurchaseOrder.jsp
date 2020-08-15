@@ -387,7 +387,8 @@ function retrieveProductByExcel(products){
     	    str += "<tr height='22' id='row"+ indexB + "' class='excelTable' align='center'>";
 
     	    str += "<td align='center'>" + (indexB+1) +"</td>";
-    	    str += "<td>"+barcode.barcode +"<input type='hidden' name='formBean.order.productList["+indexB+"].pb.id' id='productId"+indexB+"' value='"+ barcode.id+"'/></td>";		 					 		
+    	    var hiddenVal = "<input type='hidden' name='formBean.order.productList["+indexB+"].discount' value='"+p.discount+"'/><input type='hidden' name='formBean.order.productList["+indexB+"].price' value='"+p.price+"'/>";
+    	    str += "<td>" + hiddenVal + +barcode.barcode +"<input type='hidden' name='formBean.order.productList["+indexB+"].pb.id' id='productId"+indexB+"' value='"+ barcode.id+"'/></td>";		 					 		
     	    str += "<td>"+barcode.product.year.year+"</td>";	
     	    str += "<td>"+barcode.product.quarter.quarter_Name+"</td>";	
     	    str += "<td>"+barcode.product.brand.brand_Name+"</td>";		
@@ -405,7 +406,7 @@ function retrieveProductByExcel(products){
     	    str += "<td>"+barcode.product.unit+"</td>"; 					 		
     	    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].quantity' id='quantity"+indexB+"' value='"+quantity+"' size='2'  onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
     	    str += "<td><input type='text' name='formBean.order.productList["+indexB+"].recCost' id='recCost"+indexB+"' value='"+recCost+"' size='4' onchange='onQuantityChange();'  onfocus='this.select();'/>  </td>";
-    	    str += "<td>"+barcode.product.wholeSalePrice+"</td>";
+    	    str += "<td>"+(p.wholeSalePrice).toFixed(2)+"</td>";
     	    str += "<td><img src='"+baseurl+"/conf_files/web-image/delete.png' border='0' onclick='deleteRow(\"row"+indexB +"\","+indexB+")' style='cursor:pointer;'/></td>";
     	    str += "<td></td>";			 		
     	    str += "</tr>";
@@ -425,8 +426,8 @@ function retrieveProductByExcel(products){
     	
     	calculateTotal();
     }
-	
-    alert("完成导入，请检查");
+    $.messager.alert('完成', "完成导入，请检查", 'info');
+
 }
 $(document).ready(function(){
 	$("#supplierName").focus();
@@ -504,6 +505,8 @@ $(document).ready(function(){
 					 	<tr id="row<s:property value="#st.index"/>"  class="excelTable" align="center">
 					 		<td align="center"><s:property value="#st.index +1"/></td>
 					 		<td><s:property value="#orderProduct.pb.barcode"/>
+					 			<input type="text" name="formBean.order.productList[<s:property value="#st.index"/>].discount"   value="<s:property value="#orderProduct.discount"/>"/>
+								<input type="text" name="formBean.order.productList[<s:property value="#st.index"/>].price"   value="<s:property value="#orderProduct.price"/>"/>
 					 		    <input type="hidden" name="formBean.order.productList[<s:property value="#st.index"/>].pb.id" id="productId<s:property value="#st.index"/>" readonly="readonly" value="<s:property value="#orderProduct.pb.id"/>"/></td>			 					 		
 					 		<td><s:property value="#orderProduct.pb.product.year.year"/></td>
 					 		<td><s:property value="#orderProduct.pb.product.quarter.quarter_Name"/></td>			

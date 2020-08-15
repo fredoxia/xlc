@@ -30,6 +30,7 @@ public class JinSuanOrderTemplate  extends ExcelTemplate{
 	private int salePrice_column = 6;
 	private int discount_column = 8;
 	private int wholePrice_column = 9;
+	private int totalwholePrice_column = 10;
 	private int productComment_column = 14;
 	private int data_row = 1;
 	
@@ -130,8 +131,8 @@ public class JinSuanOrderTemplate  extends ExcelTemplate{
 				orderProduct.setSalePriceSelected(salesPriceSelected);
 				orderProduct.setDiscount(discount);
 				orderProduct.getProductBarcode().setBarcode(barcode);
-				
-				
+				orderProduct.setTotalWholeSalePrice(ExcelUtil.getPuzzleNum(row.getCell(totalwholePrice_column)));
+
 				orderProducts.add(orderProduct);
 				
 				row_start++;

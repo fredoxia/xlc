@@ -911,7 +911,8 @@ public class SupplierPurchaseService {
 			ProductBarcode productBarcode = proHashMap.get(barcode);
 			if (productBarcode != null){
                // Product product = productBarcode.getProduct();
-                
+                double wp = ProductBarcodeDaoImpl.getWholeSalePrice(productBarcode);
+                orderProduct.setWholeSalePrice(wp);
 				orderProduct.setPb(productBarcode);
 				//orderProduct.setRecCost(ProductBarcodeDaoImpl.getRecCost(productBarcode));
 //	            orderProduct.setSalesPrice(product.getSalesPrice());

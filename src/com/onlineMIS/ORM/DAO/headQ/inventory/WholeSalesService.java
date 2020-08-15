@@ -1206,8 +1206,9 @@ public class WholeSalesService {
         double wholePrice2 = product.getWholeSalePrice2();
         double wholePrice3 = product.getWholeSalePrice3();
         double retailPriceFactory = product.getSalesPriceFactory();
+        double salesPrice = product.getSalesPrice();
         
-        if (salePriceSelect_import != wholePrice1 && salePriceSelect_import != wholePrice2 && salePriceSelect_import != wholePrice3 && salePriceSelect_import != retailPriceFactory){
+        if (salePriceSelect_import != salesPrice && salePriceSelect_import != wholePrice1 && salePriceSelect_import != wholePrice2 && salePriceSelect_import != wholePrice3 && salePriceSelect_import != retailPriceFactory){
         	BigDecimal decimal = null;
         	double discount = 0;
         	if (wholePrice3 != 0){

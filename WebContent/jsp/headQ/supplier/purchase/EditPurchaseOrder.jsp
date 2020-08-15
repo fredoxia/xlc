@@ -505,8 +505,8 @@ $(document).ready(function(){
 					 	<tr id="row<s:property value="#st.index"/>"  class="excelTable" align="center">
 					 		<td align="center"><s:property value="#st.index +1"/></td>
 					 		<td><s:property value="#orderProduct.pb.barcode"/>
-					 			<input type="text" name="formBean.order.productList[<s:property value="#st.index"/>].discount"   value="<s:property value="#orderProduct.discount"/>"/>
-								<input type="text" name="formBean.order.productList[<s:property value="#st.index"/>].price"   value="<s:property value="#orderProduct.price"/>"/>
+					 			<input type="hidden" name="formBean.order.productList[<s:property value="#st.index"/>].discount"   value="<s:property value="#orderProduct.discount"/>"/>
+								<input type="hidden" name="formBean.order.productList[<s:property value="#st.index"/>].price"   value="<s:property value="#orderProduct.price"/>"/>
 					 		    <input type="hidden" name="formBean.order.productList[<s:property value="#st.index"/>].pb.id" id="productId<s:property value="#st.index"/>" readonly="readonly" value="<s:property value="#orderProduct.pb.id"/>"/></td>			 					 		
 					 		<td><s:property value="#orderProduct.pb.product.year.year"/></td>
 					 		<td><s:property value="#orderProduct.pb.product.quarter.quarter_Name"/></td>			

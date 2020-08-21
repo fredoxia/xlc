@@ -28,6 +28,7 @@ import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreGroupDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInOutStockDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.inventoryFlow.ChainInventoryFlowOrderService;
+import com.onlineMIS.ORM.DAO.chainS.user.ChainRoleTypeDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainUserInforDaoImpl;
@@ -36,7 +37,6 @@ import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPCardImpl;
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPPrepaidImpl;
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPScoreImpl;
 import com.onlineMIS.ORM.DAO.chainS.vip.ChainVIPService;
-
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeDaoImpl;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductBarcodeService;
 import com.onlineMIS.ORM.DAO.headQ.barCodeGentor.ProductDaoImpl;
@@ -466,6 +466,7 @@ public class ChainStoreSalesService {
 		    	//过账前要验证validate
 		    	if (response.getReturnCode() != Response.ERROR && statusNew == ChainStoreSalesOrder.STATUS_COMPLETE)
 		            response = validateSalesOrder(salesOrder, userInfor);	
+
 		    	
 		        if (response.getReturnCode() != Response.ERROR){
 		    		//1. 计算单据的totalQuantityA, totalAmountA
@@ -490,7 +491,13 @@ public class ChainStoreSalesService {
 		    		
 					//1. update the nessary information
 					salesOrder.setOrderCreateDate(new Date());
-					salesOrder.setCreator(userInfor);
+					
+					//有可能是总部用户过账
+					if (ChainUserInforService.isMgmtFromHQ(userInfor))
+					    salesOrder.setCreator(salesOrder.getSaler());
+					else 
+					    salesOrder.setCreator(userInfor);
+					
 					salesOrder.setType(orderType);
 					salesOrder.setStatus(statusNew);
 			

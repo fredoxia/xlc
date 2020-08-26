@@ -289,7 +289,7 @@ public class BasicDataService {
 		Response response = new Response();
 		
 		try {
-			int brandId = brand.getBrand_ID();
+			int brandId = brand.getBrand_ID();		
 			String brandName = brand.getBrand_Name();
 			
 			DetachedCriteria criteria = DetachedCriteria.forClass(Brand.class);

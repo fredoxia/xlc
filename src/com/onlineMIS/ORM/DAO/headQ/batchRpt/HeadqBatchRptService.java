@@ -149,8 +149,7 @@ public class HeadqBatchRptService {
 	private Calendar today = Calendar.getInstance();
 	
 	/**
-	 * 运行每周的批量报表程序
-	 * 1. 每周运行当季货品分析报表
+	 * 1. 每个小时运行系统导入千禧基础信息
 	 */
 	public Response runHourlyBasicImport(){
 
@@ -160,8 +159,8 @@ public class HeadqBatchRptService {
 		int randomNum = random.nextInt(10);
 		loggerLocal.infoB("\n\n\n----------- " + randomNum+ " "+new Date() + " 开始 每小时的基本信息导入 :  HeadqBatchRptService.runHourlyBasicImport()");
 		
-		//1. 更新brand
-	    String BRAND_MAX_NOW = "SELECT MAX(brand_ID) FROM Brand";
+		//1. 更新brand, 获取从千禧系统拿到的最大的id
+	    String BRAND_MAX_NOW = "SELECT MAX(brand_ID) FROM Brand WHERE brand_ID < " + Brand.LOCAL_START_ID;
 	    int brandMax = brandDaoImpl.executeHQLCount(BRAND_MAX_NOW, null, false);
 	    
 	    //获取千禧比这个大的

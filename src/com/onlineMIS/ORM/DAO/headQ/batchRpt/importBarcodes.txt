@@ -97,7 +97,6 @@ import com.onlineMIS.ORM.entity.headQ.qxbabydb.ProductUnit2;
 import com.onlineMIS.ORM.entity.headQ.qxbabydb.Year2;
 import com.onlineMIS.ORM.entity.headQ.supplier.finance.FinanceCategorySupplier;
 import com.onlineMIS.common.loggerLocal;
-import com.onlineMIS.filter.SystemParm;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 
 @Service
@@ -167,23 +166,12 @@ public class HeadqBatchRptService {
 	    //获取千禧比这个大的
     	DetachedCriteria criteria = DetachedCriteria.forClass(com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2.class);
     	criteria.add(Restrictions.gt("brand_ID", brandMax));
-    	
-    	//刘菊连锁店条码问题
-    	int liujuQX = Integer.parseInt(SystemParm.getParm("liujuChainStoreId"));
-    	int liujuXL = Integer.parseInt(SystemParm.getParm("liujuXiLeStoreId"));
-    	criteria.add(Restrictions.or(Restrictions.eq("chain_id", liujuQX), Restrictions.isNull("chain_id")));
+    	criteria.add(Restrictions.isNull("chain_id"));
     	List<com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2> brands =  brandDaoImpl2.getByCritera(criteria, false);
     	if (brands != null && brands.size() > 0){
     		for (Brand2 brand2 : brands){
     			Brand brand = new Brand();
     			BeanUtils.copyProperties(brand2,brand);
-    			
-    			if (brand2.getChain_id() != null && brand2.getChain_id() == liujuQX) {
-    				ChainStore store = new ChainStore();
-    				store.setChain_id(liujuXL);
-    				brand.setChainStore(store);
-    			}
-    			
     			try {
     				loggerLocal.infoB(brand.toString());
     				brandDaoImpl.save(brand, true);
@@ -201,13 +189,13 @@ public class HeadqBatchRptService {
 	    //获取千禧比这个大的
     	DetachedCriteria criteria2 = DetachedCriteria.forClass(Category2.class);
     	criteria2.add(Restrictions.gt("category_ID", categoryMax));
+    	criteria2.add(Restrictions.eq("chainId",-1));
     	List<Category2> categories =  categoryDaoImpl2.getByCritera(criteria2, false);
 	  
     	if (categories != null && categories.size() > 0){
     		for (Category2 category2 : categories){
     			Category category = new Category();
     			BeanUtils.copyProperties(category2,category);
-    			
     			try {
 	    			loggerLocal.infoB(category.toString());
 	    			categoryDaoImpl.save(category, true);
@@ -313,17 +301,20 @@ public class HeadqBatchRptService {
     	}	
     	
      	//2. 更新product
-	    String PRODUCT_MAX_NOW = "SELECT MAX(createDate) FROM Product WHERE LENGTH(serial_number) < 8";
+    	String PRODUCT_MAX_NOW = "SELECT MAX(createDate) FROM Product WHERE LENGTH(serial_number) < 8";
 	    List<Object> productMax = productDaoImpl.executeHQLSelect(PRODUCT_MAX_NOW, null,null, false);
 	    Object maxObj = productMax.get(0);
-	    if (maxObj != null){
+//	    if (maxObj != null){
 	    	Timestamp maxTime = (Timestamp)maxObj;
 	    	
 		    //获取千禧比这个大的
 	    	DetachedCriteria criteria8 = DetachedCriteria.forClass(Product2.class);
-	    	criteria8.add(Restrictions.gt("createDate", maxTime));
-	    	criteria8.add(Restrictions.or(Restrictions.eq("chainId", liujuQX), Restrictions.isNull("chainId")));
-	    	criteria8.addOrder(Order.asc("createDate"));
+	    	//criteria8.add(Restrictions.gt("createDate", maxTime));
+	    	//criteria8.add(Restrictions.isNull("chainId"));
+	    	//criteria8.addOrder(Order.asc("createDate"));
+	    	criteria8.add(Restrictions.isNull("chainId"));
+	    	criteria8.add(Restrictions.eq("yearId", 8));
+	    	criteria8.add(Restrictions.eq("quarterId", 2));
 	    	List<Product2> products =  productDaoImpl2.getByCritera(criteria8, false);
 		    
 	    	
@@ -331,10 +322,10 @@ public class HeadqBatchRptService {
 	    		for (Product2 product2 : products){
 	    			
 	    			//是2019年以前的条码略过
-	    			if (product2.getYearId() < 9){
-	    				loggerLocal.warnB(" 跳过2019年以前条码 : " + randomNum+ " " + product2.toString());
-	    				continue;
-	    			} else {		    			
+//	    			if (product2.getYearId() < 9){
+//	    				loggerLocal.warnB(" 跳过2019年以前条码 : " + randomNum+ " " + product2.toString());
+//	    				continue;
+//	    			} else {		    			
 		    			int areaId = product2.getAreaId();
 		    			int yearId = product2.getYearId();
 		    			int quarterId = product2.getQuarterId();
@@ -347,7 +338,6 @@ public class HeadqBatchRptService {
 		    			Brand brand = brandDaoImpl.get(brandId, true);
 		    			Category category = categoryDaoImpl.get(categoryId, true);
 		    			
-	        			
 		    			if (area == null || year == null || quarter == null || brand == null || category ==null){
 		    				loggerLocal.errorB(" 无法导入 ,出现基础资料null ： " + areaId + "," + yearId + "," +quarterId + "," +brandId + "," +categoryId);
 		    				continue;
@@ -359,12 +349,6 @@ public class HeadqBatchRptService {
 		    			    product.setQuarter(quarter);
 		    			    product.setBrand(brand);
 		    			    product.setCategory(category);
-		    			    
-		        			if (product2.getChainId() != null && product2.getChainId() == liujuQX) {
-		        				ChainStore store = new ChainStore();
-		        				store.setChain_id(liujuXL);
-		        				product.setChainStore(store);
-		        			}
 		    				
 							String serialNum = product2.getSerialNum();
 							Product productOriginal = productDaoImpl.getBySerialNum(serialNum, null);
@@ -378,10 +362,6 @@ public class HeadqBatchRptService {
 									BeanUtils.copyProperties(product,productOriginal);
 									productOriginal.setProductId(productId);
 									productOriginal.setRecCost(recost);
-									
-					    			if (productOriginal.getChainStore() != null && productOriginal.getChainStore().getChain_id() == liujuQX)
-					    				productOriginal.getChainStore().setChain_id(liujuXL);
-									
 								    productDaoImpl.update(productOriginal, true);
 								} catch (Exception e){
 									System.out.println(productOriginal);
@@ -390,7 +370,6 @@ public class HeadqBatchRptService {
 							} else {
 								try {
 									loggerLocal.infoB("新建Product : " + randomNum+ " " + product.toString());
-					    			
 									product.setRecCost(0);
 									productDaoImpl.save(product, true);
 								} catch (Exception e){
@@ -399,29 +378,31 @@ public class HeadqBatchRptService {
 								}
 							}
 
-		    			}
+//		    			}
 	    			}
 	    		}
 	    	}	
-	    }
-	    
+//	    }
+	    	{
 	  	//3. 更新productBarcode
-	    String PB_MAX_NOW = "SELECT MAX(createDate) FROM ProductBarcode";
+	    String PB_MAX_NOW = "SELECT MAX(createDate) FROM ProductBarcode WHERE barcode like '1%'";
 	    List<Object> pbMax = productDaoImpl.executeHQLSelect(PB_MAX_NOW, null,null, false);
 	    Object maxObjPB = pbMax.get(0);
-	    if (maxObjPB != null){
-	    	Timestamp maxTime = (Timestamp)maxObjPB;
+//	    if (maxObjPB != null){
+	    	Timestamp maxTime2 = (Timestamp)maxObjPB;
 	    	
 		    //获取千禧比这个大的
-	    	DetachedCriteria criteria9 = DetachedCriteria.forClass(ProductBarcode2.class);
-	    	criteria9.add(Restrictions.gt("createDate", maxTime));
-	    	criteria9.add(Restrictions.or(Restrictions.eq("chainId", liujuQX), Restrictions.isNull("chainId")));
-	    	criteria9.addOrder(Order.asc("createDate"));
-	    	List<ProductBarcode2> products =  productBarcodeDaoImpl2.getByCritera(criteria9, false);
+//	    	DetachedCriteria criteria9 = DetachedCriteria.forClass(ProductBarcode2.class);
+//	    	criteria9.add(Restrictions.gt("createDate", maxTime));
+//	    	criteria9.add(Restrictions.isNull("chainId"));
+//	    	criteria9.addOrder(Order.asc("createDate"));
+//	    	List<ProductBarcode2> products =  productBarcodeDaoImpl2.getByCritera(criteria9, false);
 		    
-	    	
-	    	if (products != null && products.size() > 0){
-	    		for (ProductBarcode2 product2 : products){
+	    	String hql = "FROM ProductBarcode2 WHERE chainId is NULL AND productId in (SELECT productId FROM Product2 p WHERE p.yearId = 8 and p.quarterId=2)";
+	    	List<ProductBarcode2> products2 =  productBarcodeDaoImpl2.getByHQL(hql, null, true);
+			   
+	    	if (products2 != null && products2.size() > 0){
+	    		for (ProductBarcode2 product2 : products2){
 	    			
 	    			//product 不存在就掠过
 	    			String serialNum = String.valueOf(product2.getProductId());
@@ -431,9 +412,6 @@ public class HeadqBatchRptService {
 	    				loggerLocal.warnB("skip , 主产品信息没有找到  : " + randomNum+ " " + product2.toString());
 	    				continue;
 	    			} else {	
-	        			if (product2.getChainId() != null && product2.getChainId() == liujuQX) {
-	        				System.out.println("-------------------");
-	        			}
 	    				String barcode2 = product2.getBarcode();
 	    				ProductBarcode pb = productBarcodeDaoImpl.getByBarcode(barcode2);
 	    				
@@ -443,10 +421,10 @@ public class HeadqBatchRptService {
 	                        //Integer sizeId = product2.getSizeId();
 	                        
 	                        Color color = null;
-//	                        if (chainId != null){
-//			    				loggerLocal.errorB(" 无法导入 ,不能导入连锁店条码 ： " + randomNum+ " " + product2);
-//			    				continue;
-//	                        }
+	                        if (chainId != null){
+			    				loggerLocal.errorB(" 无法导入 ,不能导入连锁店条码 ： " + randomNum+ " " + product2);
+			    				continue;
+	                        }
 	   
 	                        if (colorId != null){
 	                        	color = colorDaoImpl.get(colorId, true);
@@ -463,13 +441,6 @@ public class HeadqBatchRptService {
 			    			pb.setChainStore(null);
 			    			pb.setColor(color);
 			    			pb.setProduct(product);
-			    			
-		        			if (product2.getChainId() != null && product2.getChainId() == liujuQX) {
-		        				ChainStore store = new ChainStore();
-		        				store.setChain_id(liujuXL);
-		        				pb.setChainStore(store);
-		        			}
-			    			
 							try {
 							  loggerLocal.infoB(" 新插入条码 ： " + randomNum+ " " + pb);
 							  productBarcodeDaoImpl.save(pb, true);
@@ -491,10 +462,6 @@ public class HeadqBatchRptService {
 	                        pb.setColor(color);
 	                        pb.setCreateDate(product2.getCreateDate());
 	                        pb.setStatus(product2.getStatus());
-	                        
-			    			if (pb.getChainStore() != null && pb.getChainStore().getChain_id() == liujuQX)
-			    				pb.getChainStore().setChain_id(liujuXL);
-			    			
 							try {
 		                        loggerLocal.infoB(" 更新条码 ： " + randomNum+ " " + pb);
 		                        productBarcodeDaoImpl.update(pb, true);
@@ -507,11 +474,11 @@ public class HeadqBatchRptService {
 					 }
 	    		}
 	    	}	
-	    }
+//	    }
+	    	}
 		loggerLocal.infoB("----------- " + randomNum+ " "+new Date() + " 完成 每小时的基本信息导入 ");
 		
 		return response;
-
 	}
 	
 }

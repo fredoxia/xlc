@@ -788,6 +788,10 @@ public class ProductBarcodeService {
 	 * total = odd total + even total
 	 * check number = 10 - total % 10
 	 * barcode = barcode11 + check number
+	 * 千禧 1开头
+	 * 千禧客户9开头
+	 * 喜乐2开头
+	 * 喜乐客户8开头
 	 * @param barCode
 	 * @return
 	 */

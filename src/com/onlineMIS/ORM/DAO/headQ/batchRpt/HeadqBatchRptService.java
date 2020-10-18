@@ -318,7 +318,7 @@ public class HeadqBatchRptService {
 	    Object maxObj = productMax.get(0);
 	    if (maxObj != null){
 	    	Timestamp maxTime = (Timestamp)maxObj;
-	    	
+	    	loggerLocal.infoB("Product date" + randomNum+ "  :  " + maxTime);
 		    //获取千禧比这个大的
 	    	DetachedCriteria criteria8 = DetachedCriteria.forClass(Product2.class);
 	    	criteria8.add(Restrictions.gt("createDate", maxTime));
@@ -328,6 +328,7 @@ public class HeadqBatchRptService {
 		    
 	    	
 	    	if (products != null && products.size() > 0){
+	    		loggerLocal.infoB("Product size" + randomNum+ "  :  " + products.size());
 	    		for (Product2 product2 : products){
 	    			
 	    			//是2019年以前的条码略过
@@ -352,6 +353,7 @@ public class HeadqBatchRptService {
 		    				loggerLocal.errorB(" 无法导入 ,出现基础资料null ： " + areaId + "," + yearId + "," +quarterId + "," +brandId + "," +categoryId);
 		    				continue;
 		    			} else {
+		    				loggerLocal.infoB("准备导入 " + randomNum+ "  :  " + product2.toString());
 		    				Product product = new Product();
 		    				BeanUtils.copyProperties(product2,product);
 		    			    product.setArea(area);
@@ -384,7 +386,9 @@ public class HeadqBatchRptService {
 									
 								    productDaoImpl.update(productOriginal, true);
 								} catch (Exception e){
-									System.out.println(productOriginal);
+									loggerLocal.errorB(" ?????? 更新产品出现问题 :");
+									loggerLocal.errorB(e);
+									
 									e.printStackTrace();
 								}
 							} else {
@@ -394,7 +398,9 @@ public class HeadqBatchRptService {
 									product.setRecCost(0);
 									productDaoImpl.save(product, true);
 								} catch (Exception e){
-									System.out.println(productOriginal);
+									loggerLocal.errorB(" ?????? 新建产品出现问题 :");
+									loggerLocal.errorB(e);
+									
 									e.printStackTrace();
 								}
 							}
@@ -406,9 +412,11 @@ public class HeadqBatchRptService {
 	    }
 	    
 	  	//3. 更新productBarcode
-	    String PB_MAX_NOW = "SELECT MAX(createDate) FROM ProductBarcode";
+	    String PB_MAX_NOW = "SELECT MAX(createDate) FROM ProductBarcode WHERE barcode LIKE '1%' or barcode LIKE '9%'";
+	    
 	    List<Object> pbMax = productDaoImpl.executeHQLSelect(PB_MAX_NOW, null,null, false);
 	    Object maxObjPB = pbMax.get(0);
+	    loggerLocal.infoB("最大 createDate PB" + randomNum+ "  :  " + maxObjPB);
 	    if (maxObjPB != null){
 	    	Timestamp maxTime = (Timestamp)maxObjPB;
 	    	
@@ -421,6 +429,7 @@ public class HeadqBatchRptService {
 		    
 	    	
 	    	if (products != null && products.size() > 0){
+	    		loggerLocal.infoB("PB size" + randomNum+ "  :  " + products.size());
 	    		for (ProductBarcode2 product2 : products){
 	    			
 	    			//product 不存在就掠过
@@ -430,12 +439,10 @@ public class HeadqBatchRptService {
 	    			if (product == null){
 	    				loggerLocal.warnB("skip , 主产品信息没有找到  : " + randomNum+ " " + product2.toString());
 	    				continue;
-	    			} else {	
-	        			if (product2.getChainId() != null && product2.getChainId() == liujuQX) {
-	        				System.out.println("-------------------");
-	        			}
+	    			} else {
+	    				loggerLocal.warnB("准备导入 " + randomNum+ " " + product2.toString());
 	    				String barcode2 = product2.getBarcode();
-	    				ProductBarcode pb = productBarcodeDaoImpl.getByBarcode(barcode2);
+	    				ProductBarcode pb = productBarcodeDaoImpl.getByBarcode(barcode2, null);
 	    				
 	    				if (pb == null){
 	                        Integer chainId = product2.getChainId();

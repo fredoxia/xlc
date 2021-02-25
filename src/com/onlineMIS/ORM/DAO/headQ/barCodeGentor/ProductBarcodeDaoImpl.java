@@ -39,6 +39,21 @@ public class ProductBarcodeDaoImpl  extends BaseDAO<ProductBarcode> {
         return this.executeHQLUpdateDelete(queryString, values, true);
 	}
 	
+	public ProductBarcode getByBarcode(String barcode, Integer status){
+		DetachedCriteria criteria = DetachedCriteria.forClass(ProductBarcode.class);
+		criteria.add(Restrictions.eq("barcode", barcode));
+		
+		if (status != null)
+		    criteria.add(Restrictions.eq("status", status));
+		
+		List<ProductBarcode> productBarcodes =  this.getByCritera(criteria,true);
+		
+		if (productBarcodes != null && productBarcodes.size() != 0){
+			return productBarcodes.get(0);
+		} else 
+			return null;
+	}
+	
 	public ProductBarcode getByBarcode(String barcode){
 		DetachedCriteria criteria = DetachedCriteria.forClass(ProductBarcode.class);
 		criteria.add(Restrictions.eq("barcode", barcode));

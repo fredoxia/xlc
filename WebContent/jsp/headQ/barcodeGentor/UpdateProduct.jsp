@@ -152,7 +152,7 @@ function update(){
 	          <td height="18"><strong>颜色</strong>         :</td><td><s:property value="uiBean.product.color.name"/></td>
 	       </tr>
 	       <tr class="InnerTableContent">
-	          <td height="18"><strong>连锁零售价 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.salesPrice" class="easyui-numberbox"  data-options="required:true,min:0,max:999,precision:0" size="9" style="width:80px;" id="salesPrice" value="<s:if test="uiBean.product.product.salesPrice!=0"><s:property value="uiBean.product.product.salesPrice"/></s:if>" size="10"/></td>
+	          <td height="18"><strong>连锁零售价 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.salesPrice" class="easyui-numberbox"  data-options="required:true,min:0,max:2000,precision:0" size="9" style="width:80px;" id="salesPrice" value="<s:if test="uiBean.product.product.salesPrice!=0"><s:property value="uiBean.product.product.salesPrice"/></s:if>" size="10"/></td>
 	       </tr>
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td height="18"><strong>进价 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.recCost" id="recCost" class="easyui-numberbox"  data-options="required:false,min:0,max:999,precision:2" size="9" style="width:80px;" value="<s:if test="uiBean.product.product.recCost!=0"><s:property value="uiBean.product.product.recCost"/></s:if>" size="10"/></td>
@@ -171,7 +171,7 @@ function update(){
 	          <td height="18"><strong>预设价3 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.wholeSalePrice3" id="wholeSalePrice3"  data-options="min:0,max:999,precision:2" size="9" class="easyui-numberbox" style="width:80px;" value="<s:if test="uiBean.product.product.wholeSalePrice3!=0"><s:property value="uiBean.product.product.wholeSalePrice3"/></s:if>" size="10"/></td>
 	       </tr>	       
 	       <tr class="InnerTableContent">
-	          <td height="18"><strong>厂家零售价 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.salesPriceFactory" id="salesPriceFactory"  data-options="min:0,max:999,precision:1" size="9" class="easyui-numberbox" style="width:80px;" value="<s:if test="uiBean.product.product.salesPriceFactory!=0"><s:property value="uiBean.product.product.salesPriceFactory"/></s:if>" size="10"/></td>
+	          <td height="18"><strong>厂家零售价 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.salesPriceFactory" id="salesPriceFactory"  data-options="min:0,max:2000,precision:1" size="9" class="easyui-numberbox" style="width:80px;" value="<s:if test="uiBean.product.product.salesPriceFactory!=0"><s:property value="uiBean.product.product.salesPriceFactory"/></s:if>" size="10"/></td>
 	       </tr>
 	       <tr class="InnerTableContent" style="background-color: rgb(255, 250, 208);">
 	          <td height="18"><strong>折扣 </strong>       :</td><td><input type="text" name="formBean.productBarcode.product.discount" id="discount" class="easyui-numberbox"  data-options="required:true,min:0,max:1,precision:2" size="9" style="width:80px;" value="<s:if test="uiBean.product.product.discount!=0"><s:property value="uiBean.product.product.discount"/></s:if>" size="10" /></td>

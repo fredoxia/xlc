@@ -279,8 +279,8 @@
    		 		<ref bean="dailySalesBatchTrigger"/>
    		 		<ref bean="weeklyRankBatchTrigger"/>
     		
-   	<!--	 	<ref bean="dailyGenBarcodeTrigger"/>
-   	 	 		<ref bean="dailyCheckInvetoryOrderTrigger"/>-->
+   		 	    <ref bean="dailyGenBarcodeTrigger"/>
+   	 <!--	 		<ref bean="dailyCheckInvetoryOrderTrigger"/>-->
    		 		<ref bean="weeklyBatchProductAnalysisRptTrigger"/>
    		 		<ref bean="weeklyBatchSalesAnalysisRptTrigger"/>
    	<!--	 	<ref bean="dailySalesVIPPercentageTrigger"/>

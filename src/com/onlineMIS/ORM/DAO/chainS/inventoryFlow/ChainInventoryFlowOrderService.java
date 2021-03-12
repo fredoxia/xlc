@@ -556,7 +556,12 @@ public class ChainInventoryFlowOrderService {
 	 */
 	@Transactional
 	public ChainInventoryFlowOrder getOrderById(int orderId,ChainUserInfor loginUser) {
-		ChainInventoryFlowOrder order = chainInventoryFlowOrderDaoImpl.get(orderId, false);
+		ChainInventoryFlowOrder order = null;
+		try {
+		   order = chainInventoryFlowOrderDaoImpl.get(orderId, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		chainInventoryFlowOrderDaoImpl.initialize(order);
 		
 		//check the toChainStore
@@ -1346,7 +1351,10 @@ public class ChainInventoryFlowOrderService {
 		String brandName = "";
 		Color color = null;
 		String colorName = "";
+		
 		for (ProductBarcode productBarcode: productBarcodes){
+			int randomInt = (int) (Math.random() * 100);
+			int randomInt2 = (int) (Math.random() * 100);
 			barcode = productBarcode.getBarcode();
 			productCode = productBarcode.getProduct().getProductCode();
 			brandName = productBarcode.getProduct().getBrand().getBrand_Name();
@@ -1354,7 +1362,7 @@ public class ChainInventoryFlowOrderService {
 			if (color != null)
 				colorName = color.getName();
 			
-			barcodeBuffer.append(barcode + "," + productCode + "," + brandName + "," + colorName + "," + "\n" );
+			barcodeBuffer.append(barcode + "," + productCode + "," + brandName + randomInt + "," + colorName + randomInt2 + "," + "\n" );
 			//barcodeBuffer.append(productBarcode.getId() + ",1"+ "\n" );
 		}
 		

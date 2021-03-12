@@ -12,6 +12,7 @@ import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Color;
 import com.onlineMIS.ORM.entity.headQ.barcodeGentor.Product;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrder;
 import com.onlineMIS.ORM.entity.headQ.inventory.InventoryOrderProduct;
+import com.onlineMIS.ORM.entity.headQ.user.UserInfor;
 import com.onlineMIS.common.ExcelTemplate;
 
 
@@ -69,7 +70,9 @@ public class PurchaseOrderTemplate extends ExcelTemplate{
 		
 		
 		Row headerRow2 = sheet.getRow(header_row2_ind);
-		headerRow2.createCell(inventoryCounter_column).setCellValue(order.getOrder_Counter().getName());
+		UserInfor orderCounterInfor = order.getOrder_Counter();
+		if (orderCounterInfor != null)
+		    headerRow2.createCell(inventoryCounter_column).setCellValue(order.getOrder_Counter().getName());
 		Cell inventoryDateCell = headerRow2.createCell(inventoryDate_column);
 		inventoryDateCell.setCellValue(order.getOrder_StartTime());
 		inventoryDateCell.setCellStyle(dateStyle);

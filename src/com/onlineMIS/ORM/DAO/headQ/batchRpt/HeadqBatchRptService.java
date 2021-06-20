@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +133,13 @@ public class HeadqBatchRptService {
     	//刘菊连锁店条码问题
     	int liujuQX = Integer.parseInt(SystemParm.getParm("liujuChainStoreId"));
     	int liujuXL = Integer.parseInt(SystemParm.getParm("liujuXiLeStoreId"));
-    	criteria.add(Restrictions.or(Restrictions.eq("chain_id", liujuQX), Restrictions.isNull("chain_id")));
+    	int zhiyinQX = Integer.parseInt(SystemParm.getParm("zhiyinChanStoreId"));
+    	int zhiyinXL = Integer.parseInt(SystemParm.getParm("zhiyinXiLeStoreId"));
+    	
+    	Set<Integer> qxSet = new HashSet<Integer>();
+    	qxSet.add(liujuQX);
+    	qxSet.add(zhiyinQX);
+    	criteria.add(Restrictions.or(Restrictions.in("chain_id", qxSet), Restrictions.isNull("chain_id")));
     	List<com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2> brands =  brandDaoImpl2.getByCritera(criteria, false);
     	if (brands != null && brands.size() > 0){
     		for (Brand2 brand2 : brands){
@@ -142,6 +149,10 @@ public class HeadqBatchRptService {
     			if (brand2.getChain_id() != null && brand2.getChain_id() == liujuQX) {
     				ChainStore store = new ChainStore();
     				store.setChain_id(liujuXL);
+    				brand.setChainStore(store);
+    			} else if (brand2.getChain_id() != null && brand2.getChain_id() == zhiyinQX) {
+    				ChainStore store = new ChainStore();
+    				store.setChain_id(zhiyinXL);
     				brand.setChainStore(store);
     			}
     			
@@ -283,7 +294,7 @@ public class HeadqBatchRptService {
 		    //获取千禧比这个大的
 	    	DetachedCriteria criteria8 = DetachedCriteria.forClass(Product2.class);
 	    	criteria8.add(Restrictions.gt("createDate", maxTime));
-	    	criteria8.add(Restrictions.or(Restrictions.eq("chainId", liujuQX), Restrictions.isNull("chainId")));
+	    	criteria8.add(Restrictions.or(Restrictions.in("chainId", qxSet), Restrictions.isNull("chainId")));
 	    	criteria8.addOrder(Order.asc("createDate"));
 	    	List<Product2> products =  productDaoImpl2.getByCritera(criteria8, false);
 		    
@@ -327,6 +338,10 @@ public class HeadqBatchRptService {
 		        				ChainStore store = new ChainStore();
 		        				store.setChain_id(liujuXL);
 		        				product.setChainStore(store);
+		        			} else if (product2.getChainId() != null && product2.getChainId() == zhiyinQX) {
+		        				ChainStore store = new ChainStore();
+		        				store.setChain_id(zhiyinXL);
+		        				product.setChainStore(store);
 		        			}
 		    				
 							String serialNum = product2.getSerialNum();
@@ -344,7 +359,9 @@ public class HeadqBatchRptService {
 									
 					    			if (productOriginal.getChainStore() != null && productOriginal.getChainStore().getChain_id() == liujuQX)
 					    				productOriginal.getChainStore().setChain_id(liujuXL);
-									
+					    			else if (productOriginal.getChainStore() != null && productOriginal.getChainStore().getChain_id() == zhiyinQX)
+					    				productOriginal.getChainStore().setChain_id(zhiyinXL);
+					    			
 								    productDaoImpl.update(productOriginal, true);
 								} catch (Exception e){
 									loggerLocal.errorB(" ?????? 更新产品出现问题 :");
@@ -384,7 +401,7 @@ public class HeadqBatchRptService {
 		    //获取千禧比这个大的
 	    	DetachedCriteria criteria9 = DetachedCriteria.forClass(ProductBarcode2.class);
 	    	criteria9.add(Restrictions.gt("createDate", maxTime));
-	    	criteria9.add(Restrictions.or(Restrictions.eq("chainId", liujuQX), Restrictions.isNull("chainId")));
+	    	criteria9.add(Restrictions.or(Restrictions.in("chainId", qxSet), Restrictions.isNull("chainId")));
 	    	criteria9.addOrder(Order.asc("createDate"));
 	    	List<ProductBarcode2> products =  productBarcodeDaoImpl2.getByCritera(criteria9, false);
 		    
@@ -436,6 +453,10 @@ public class HeadqBatchRptService {
 		        				ChainStore store = new ChainStore();
 		        				store.setChain_id(liujuXL);
 		        				pb.setChainStore(store);
+		        			} else if (product2.getChainId() != null && product2.getChainId() == zhiyinQX) {
+		        				ChainStore store = new ChainStore();
+		        				store.setChain_id(zhiyinXL);
+		        				pb.setChainStore(store);
 		        			}
 			    			
 							try {
@@ -462,6 +483,8 @@ public class HeadqBatchRptService {
 	                        
 			    			if (pb.getChainStore() != null && pb.getChainStore().getChain_id() == liujuQX)
 			    				pb.getChainStore().setChain_id(liujuXL);
+			    			else if (pb.getChainStore() != null && pb.getChainStore().getChain_id() == zhiyinQX)
+			    				pb.getChainStore().setChain_id(zhiyinXL);
 			    			
 							try {
 		                        loggerLocal.infoB(" 更新条码 ： " + randomNum+ " " + pb);

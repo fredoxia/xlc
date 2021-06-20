@@ -164,8 +164,8 @@ public class HeadqBatchRptServiceImportChainBarcode {
     	
 	 	
     	//刘菊连锁店条码问题
-    	int liujuQX = Integer.parseInt(SystemParm.getParm("liujuChainStoreId"));
-    	int liujuXL = Integer.parseInt(SystemParm.getParm("liujuXiLeStoreId"));
+    	int liujuQX = Integer.parseInt(SystemParm.getParm("zhiyinChanStoreId"));
+    	int liujuXL = Integer.parseInt(SystemParm.getParm("zhiyinXiLeStoreId"));
     	criteria.add(Restrictions.eq("chain_id", liujuQX));
     	List<com.onlineMIS.ORM.entity.headQ.qxbabydb.Brand2> brands =  brandDaoImpl2.getByCritera(criteria, false);
     	if (brands != null && brands.size() > 0){
@@ -190,7 +190,6 @@ public class HeadqBatchRptServiceImportChainBarcode {
     	}
     	
      	//2. 更新product
-
 	    	DetachedCriteria criteria8 = DetachedCriteria.forClass(Product2.class);
 
 	    	criteria8.add(Restrictions.eq("chainId", liujuQX));

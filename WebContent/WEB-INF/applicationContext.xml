@@ -280,10 +280,12 @@
    		 		<ref bean="weeklyRankBatchTrigger"/>		
    		 	    <ref bean="dailyGenBarcodeTrigger"/>
    		 		<ref bean="dailyCheckInvetoryOrderTrigger"/>
+   		 		<ref bean="biweeklyTransferOrderAcctCalculationTrigger"/>
+   		 		
    		 		<!--<ref bean="weeklyBatchProductAnalysisRptTrigger"/>
    		 		    <ref bean="weeklyBatchSalesAnalysisRptTrigger"/>
    		 	        <ref bean="dailySalesVIPPercentageTrigger"/>-->
-   		 		<ref bean="biweeklyTransferOrderAcctCalculationTrigger"/>
+   		 		
    		 		
    		 		<!--<ref bean="monthlyDummyHotBrandBatchTrigger"/>
    		 		<ref bean="dailyDummySalesBatchTrigger"/>-->

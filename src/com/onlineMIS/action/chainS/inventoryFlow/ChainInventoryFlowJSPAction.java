@@ -651,6 +651,26 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		return "download"; 
 	}
 
+	/**
+	 * go to create 调货单 (inventory transfer order)
+	 * @return
+	 */
+	public String preCreateInventoryTransferOrder(){
+		ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"preCreateInventoryTransferOrder");
+    	
+		ChainInventoryFlowOrder order = formBean.getFlowOrder();
+		
+		flowOrderService.prepareCreateInvenTransferOrderFormUIBean(loginUser, uiBean, formBean, order);
+		
+		//prepare the 
+		ChainUtility.calculateParam(formBean, order);
+		
+		//set the order type
+		formBean.getFlowOrder().setType(ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER);
+		
+		return "editInventoryTransferOrder";		
+	}
 	
 	private String postSubmitFlowOrder(boolean toFinalize){
 		//clear the data

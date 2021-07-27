@@ -518,6 +518,7 @@
         </action> 
         <action name="inventoryFlowJSPAction" class="com.onlineMIS.action.chainS.inventoryFlow.ChainInventoryFlowJSPAction">
             <result name="input">/jsp/common/error.jsp</result>
+            <result name="editInventoryTransferOrder">/jsp/chainStore/inventoryFlow/ChainInvenTransferOrder.jsp</result>
             <result name="editFlowOrder">/jsp/chainStore/inventoryFlow/ChainInvenflowOrder.jsp</result>
             <result name="editInventoryOrder">/jsp/chainStore/inventoryFlow/ChainInvenOrder.jsp</result>
             <result name="displayFlowOrder">/jsp/chainStore/inventoryFlow/DisplayChainInvenflowOrder.jsp</result>

@@ -1830,4 +1830,38 @@ public class ChainInventoryFlowOrderService {
 		return response;
 	}
 
+
+	/**
+	 * 准备调货单的页面内容
+	 * @param loginUser
+	 * @param uiBean
+	 * @param formBean
+	 * @param order
+	 */
+	@Transactional
+	public void prepareCreateInvenTransferOrderFormUIBean(
+			ChainUserInfor loginUser, ChainInventoryFlowUIBean uiBean,
+			ChainInventoryFlowFormBean formBean, ChainInventoryFlowOrder order) {
+ 	    formBean.setFlowOrder(order);
+  	   
+ 	    //1. set the store list
+		List<ChainStore> stores = chainStoreService.getChainStoreList(loginUser);
+		stores.add(0, ChainStoreDaoImpl.getOutsideStore());
+		uiBean.setChainStores(stores);
+		
+		//2. set the creator
+		formBean.getFlowOrder().setCreator(loginUser);
+		
+		//3. set the date
+		formBean.getFlowOrder().setOrderDate(new Date());
+		
+		//4.调货到的连锁店
+		List<ChainStore> toChainStores = new ArrayList<ChainStore>();
+		if (ChainUserInforService.isMgmtFromHQ(loginUser)){
+			toChainStores =  chainStoreDaoImpl.getAll(true);
+	    }
+		
+		uiBean.setToChainStores(toChainStores);
+	}
+
 }

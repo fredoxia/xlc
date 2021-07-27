@@ -56,7 +56,7 @@ function printContent(prepaid){
 function printHeader(chainName){
 	 dfPrinter.FontSize=fontSizeHead;
 	 dfPrinter.FontBold=true;
-     var content = "朴与素童装连锁 - 预存金";
+     var content = "禧乐仓童装连锁 - 预存金";
        pazu.TPrinter.printToDefaultPrinter(content);
        pazu.TPrinter.printToDefaultPrinter(chainName);
      content = "--------------------";

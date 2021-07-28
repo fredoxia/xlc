@@ -347,7 +347,9 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
     		   Collections.sort(order.getProductList(), new ChainInveProductSort());
     		   
     		   return "displayInventoryReport";
-           }  
+           } else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER)
+    		   return "displayInventoryTransferOrder";
+             else
                return "displayFlowOrder";
         }else if (orderStatus ==  ChainInventoryFlowOrder.STATUS_DRAFT){
 
@@ -355,6 +357,9 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
         	   flowOrderService.prepareCreateFlowOrderFormUIBean(loginUser, uiBean, formBean, order);
         	   
     		   return "editInventoryOrder";
+    	   } else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
+    		   flowOrderService.prepareCreateInvenTransferOrderFormUIBean(loginUser, uiBean, formBean, order);
+    		   return "editInventoryTransferOrder";    		   
     	   } else {
         	   flowOrderService.prepareCreateFlowOrderFormUIBean(loginUser, uiBean, formBean, order);
                return "editFlowOrder";
@@ -661,7 +666,12 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
     	
 		ChainInventoryFlowOrder order = formBean.getFlowOrder();
 		
-		flowOrderService.prepareCreateInvenTransferOrderFormUIBean(loginUser, uiBean, formBean, order);
+		Response response = flowOrderService.prepareCreateInvenTransferOrderFormUIBean(loginUser, uiBean, formBean, order);
+		
+		if (!response.isSuccess()) {
+			addActionError(response.getMessage());
+			return ERROR;
+		}
 		
 		//prepare the 
 		ChainUtility.calculateParam(formBean, order);
@@ -685,7 +695,9 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 			return preCreateflowLossOrder();
 		else if (orderType == ChainInventoryFlowOrder.INVENTORY_ORDER)
 			return preCreateInventoryOrder();
-		else 
+		else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER)
+			return preCreateInventoryTransferOrder();
+		else
 			return ERROR;
 	}
 	

@@ -42,6 +42,12 @@ public class ChainStoreConf implements Serializable {
 	private int allowMyPrepaidCrossStore = 0;
 	private String shippingAddress = "";
 	private int prepaidPasswordRequired = 0;
+	private int allowThirdPartyProductPurchase = 0;
+	
+	public static final int ALLOW_THIRDPARTY_PRODUCT_PURCHASE = 1;
+	public static final int DISALLOW_THIRDPARTY_PRODUCT_PURCHASE = 0;
+	
+	
 	public static final int PREPAID_PASSWORD_REQUIRED = 1;
 	public static final int PREPAID_PASSWORD_NOT_REQUIRED = 0;
 	
@@ -67,6 +73,18 @@ public class ChainStoreConf implements Serializable {
 	public ChainStoreConf(){
 		
 	}
+	
+	
+	public int getAllowThirdPartyProductPurchase() {
+		return allowThirdPartyProductPurchase;
+	}
+
+
+	public void setAllowThirdPartyProductPurchase(int allowThirdPartyProductPurchase) {
+		this.allowThirdPartyProductPurchase = allowThirdPartyProductPurchase;
+	}
+
+
 	public int getPrepaidPasswordRequired() {
 		return prepaidPasswordRequired;
 	}

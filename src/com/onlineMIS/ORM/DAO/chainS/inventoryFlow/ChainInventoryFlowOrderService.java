@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.onlineMIS.ORM.DAO.Response;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainInitialStockDaoImpl;
+import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreConfDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.chainMgmt.ChainStoreGroupDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreDaoImpl;
 import com.onlineMIS.ORM.DAO.chainS.user.ChainStoreService;
@@ -50,6 +51,7 @@ import com.onlineMIS.ORM.DAO.headQ.inventory.HeadqInventoryVO;
 import com.onlineMIS.ORM.entity.base.Pager;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainInitialStock;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainInitialStockId;
+import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreConf;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroup;
 import com.onlineMIS.ORM.entity.chainS.chainMgmt.ChainStoreGroupElement;
 import com.onlineMIS.ORM.entity.chainS.inventoryFlow.ChainInOutStock;
@@ -96,6 +98,9 @@ public class ChainInventoryFlowOrderService {
 	
 	@Autowired
 	private ChainStoreService chainStoreService;
+	
+	@Autowired
+	private ChainStoreConfDaoImpl chainStoreConfDaoImpl;
 	
 	@Autowired
 	private ChainInOutStockDaoImpl chainInOutStockDaoImpl;
@@ -409,7 +414,9 @@ public class ChainInventoryFlowOrderService {
     	      //ChainInventoryFlowOrder order = getOrderById(flowOrder.getId(), loginUser);
     		   flowOrder.setChainStore(chainStoreService.getChainStoreByID(flowOrder.getChainStore().getChain_id()));
     	       updateChainFlowOrderInOutStock(flowOrder, ChainStoreSalesOrder.STATUS_COMPLETE);
-    	   } 
+    	   } else if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
+    		   updateChainInvenTransferInOutStock(flowOrder, ChainStoreSalesOrder.STATUS_COMPLETE);
+    	   }
 		   
 		   response.setReturnCode(Response.SUCCESS);
 		   response.setMessage("已经成功保存");
@@ -421,6 +428,67 @@ public class ChainInventoryFlowOrderService {
 		return response;
 	}
 	
+	/**
+	 * 调库产生的库存需要修改
+	 * @param order
+	 * @param status
+	 */
+	private void updateChainInvenTransferInOutStock(ChainInventoryFlowOrder order,
+			int status)  {
+		boolean isCancel = false;
+
+		ChainStore toChainStore = order.getToChainStore();
+
+		int toClientId = 0;
+
+		if (toChainStore != null && toChainStore.getChain_id() !=0){
+			toClientId = chainStoreService.getChainStoreByID(toChainStore.getChain_id()).getClient_id();
+		} else {
+			return ;
+		}
+
+
+		if (status == ChainInventoryFlowOrder.STATUS_CANCEL)
+			isCancel = true;
+		
+		String orderId = String.valueOf(order.getId());
+		int offset = isCancel ? -1 : 1;
+		String orderIdHead = isCancel ? "C" : "";
+
+		orderId = ChainInOutStock.CHAIN_TRANSFER + orderIdHead + orderId;	
+
+		 Iterator<ChainInventoryFlowOrderProduct> orderProducts = order.getProductSet().iterator();
+		 while (orderProducts.hasNext()){
+			 ChainInventoryFlowOrderProduct orderProduct = orderProducts.next();
+		 
+			 int productId = orderProduct.getProductBarcode().getId();
+			 String barcode = orderProduct.getProductBarcode().getBarcode();
+			 int quantity = orderProduct.getQuantity() * offset;
+			 
+			 /**
+			  * 1. 为from chain准备库存调出
+			  */
+			 ProductBarcode pBarcode = productBarcodeDaoImpl.get(productId, true);
+			 double cost = productBarcodeDaoImpl.getWholeSalePrice(pBarcode);
+			 double salePrice = pBarcode.getProduct().getSalesPrice();
+			 double chainSalePrice = pBarcode.getProduct().getSalesPrice();
+			 
+			 /**
+			  * 为to chain store准备库存调入单, 和saleshistory
+			  */
+			 if (toClientId > 0){
+				 //1. 更新in-out
+				 int toQuantity = quantity;	 
+				 ChainInOutStock inOutStockTo = new ChainInOutStock(barcode, toClientId, orderId, order.getType() , cost, cost * toQuantity,salePrice, salePrice * toQuantity, chainSalePrice*toQuantity, toQuantity, orderProduct.getProductBarcode());
+				 chainInOutStockDaoImpl.save(inOutStockTo, false);
+				 
+//				 //2. 更新history以后合并系统可以
+				 HeadQSalesHistory salesHistory = new HeadQSalesHistory(pBarcode.getId(), toClientId, 0 , cost, 0, toQuantity, 0, 1);		
+				 headQSalesHisDAOImpl.saveOrUpdate(salesHistory, false);
+				 
+			 }
+		 }
+	}
 	/**
 	 * function to cancel the flow order 红冲
 	 */
@@ -629,7 +697,10 @@ public class ChainInventoryFlowOrderService {
 		ChainStore fromChainStore = flowOrder.getFromChainStore();
 		if (fromChainStore != null && fromChainStore.getChain_id() == 0)
 			flowOrder.setFromChainStore(null);
-				
+			
+		if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){		
+			flowOrder.setChainStore(toChainStore);
+		}
 		
 		flowOrder.buildIndex();
 		flowOrder.putListToSet();
@@ -1839,15 +1910,22 @@ public class ChainInventoryFlowOrderService {
 	 * @param order
 	 */
 	@Transactional
-	public void prepareCreateInvenTransferOrderFormUIBean(
+	public Response prepareCreateInvenTransferOrderFormUIBean(
 			ChainUserInfor loginUser, ChainInventoryFlowUIBean uiBean,
 			ChainInventoryFlowFormBean formBean, ChainInventoryFlowOrder order) {
+		Response response = new Response();
+		
+		if (!ChainUserInforService.isMgmtFromHQ(loginUser)) {
+			ChainStore store = loginUser.getMyChainStore();
+			ChainStoreConf chainStoreConf = chainStoreConfDaoImpl.get(store.getChain_id(), true);
+			if (chainStoreConf == null || chainStoreConf.getAllowThirdPartyProductPurchase() == ChainStoreConf.DISALLOW_THIRDPARTY_PRODUCT_PURCHASE) {
+				response.setFail("当前入库单无法使用");
+				return response;
+			}
+		}
+		
+		
  	    formBean.setFlowOrder(order);
-  	   
- 	    //1. set the store list
-		List<ChainStore> stores = chainStoreService.getChainStoreList(loginUser);
-		stores.add(0, ChainStoreDaoImpl.getOutsideStore());
-		uiBean.setChainStores(stores);
 		
 		//2. set the creator
 		formBean.getFlowOrder().setCreator(loginUser);
@@ -1859,9 +1937,13 @@ public class ChainInventoryFlowOrderService {
 		List<ChainStore> toChainStores = new ArrayList<ChainStore>();
 		if (ChainUserInforService.isMgmtFromHQ(loginUser)){
 			toChainStores =  chainStoreDaoImpl.getAll(true);
+	    } else {
+	    	toChainStores = chainStoreService.getChainStoreList(loginUser);
 	    }
 		
 		uiBean.setToChainStores(toChainStores);
+		
+		return response;
 	}
 
 }

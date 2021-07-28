@@ -91,9 +91,7 @@ $(function() {
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!createTransferOrder')">
 							<li data-options="iconCls:'icon-database',attributes:{url:'chainTransferJSPAction!createTransferOrder'}">调货单</li>
 						</s:if>	
-						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preCreateInventoryTransferOrder')">
-							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCreateInventoryTransferOrder'}">入库单</li>
-						</s:if>								
+						
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('chainTransferJSPAction!preSearchTransferOrder')">
 							<li data-options="iconCls:'icon-database',attributes:{url:'chainTransferJSPAction!preSearchTransferOrder'}">搜索调货单据</li>
 						</s:if>								
@@ -113,6 +111,9 @@ $(function() {
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preCreateflowLossOrder')">
 							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCreateflowLossOrder'}">报损单</li>
 						</s:if>
+						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preCreateInventoryTransferOrder')">
+							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCreateInventoryTransferOrder'}">入库单</li>
+						</s:if>								
 							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!checkInvenTrace'}">商品库存跟踪</li>
 							<li data-options="iconCls:'icon-database',attributes:{url:'inventoryFlowJSPAction!preCheckChainInven'}">连锁店商品库存查询</li>
 						<s:if test="#session.LOGIN_CHAIN_USER.containFunction('inventoryFlowJSPAction!preCreateInventoryOrder')">

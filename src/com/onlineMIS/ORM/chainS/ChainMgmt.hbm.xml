@@ -36,6 +36,8 @@
         <property name="prepaidCalculationType" column="prepaid_calculation_type" type="integer"/> 
         <property name="allowOtherVIPUseVIPScore" column="allow_vip_other_chain_vipscore" type="integer"/>
         <property name="prepaidPasswordRequired" column="prepaid_use_require_password" type="integer"/>
+        <property name="allowThirdPartyProductPurchase" column="allow_third_party_product_purchase" type="integer"/>
+        
       </class>
       
       <class name="ChainStoreGroupElement" table="chain_store_group_element">

@@ -546,7 +546,7 @@ public class ProductBarcodeService {
         		product.setDiscount(1);
         	else
         	    product.setDiscount(newProduct.getDiscount());
-        	product.setCreateDate(Common_util.getToday());
+        	product.setCreateDate(Common_util.getLastUpdateTimeInterval());
         	
 //        	String gender = newProduct.getGender();
 //        	if (gender.equals(""))
@@ -576,7 +576,7 @@ public class ProductBarcodeService {
         	
         	List<ProductBarcode> pbs = productBarcodeDaoImpl.getBarcodeFromProduct(product.getProductId());
         	for (ProductBarcode pb: pbs){
-        		pb.setCreateDate(Common_util.getToday());
+        		pb.setCreateDate(Common_util.getLastUpdateTimeInterval());
         		productBarcodeDaoImpl.update(pb, true);
         	}
         }

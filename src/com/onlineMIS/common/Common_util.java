@@ -774,11 +774,19 @@ public class Common_util {
 
 	public static void main(String[] args){
 		Date date = Common_util.getToday();
-		System.out.println(Common_util.getDateOfLastYear(date));
+		System.out.println(Common_util.getLastUpdateTimeInterval());
 	}
 
 	public static Object correctFileName(String custName) {
 		return custName.replaceAll("<", "").replaceAll(">", "").replaceAll("\\?", "").replaceAll(":", "").replaceAll("\\*", "").replaceAll("|", "").replaceAll("//", "");
 	}
+
+	public static Date getLastUpdateTimeInterval() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.HOUR, -1);
+		return calendar.getTime();
+	}
+	
+
 
 }

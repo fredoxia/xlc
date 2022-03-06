@@ -65,7 +65,7 @@ $(document).ready(function(){
 								return str;
 							}
 						}},
-					{field:'qxAmount', width:70,title:'千禧净销售',sortable:true,order:'desc',
+					{field:'qxAmount', width:70,title:'禧乐仓净销售',sortable:true,order:'desc',
 						formatter: function (value, row, index){
 						    var percentage = "-";
 						    if (row.netAmtSum  != 0)

@@ -790,8 +790,8 @@ public class ProductBarcodeService {
 	 * barcode = barcode11 + check number
 	 * 千禧 1开头
 	 * 千禧客户9开头
-	 * 喜乐2开头
-	 * 喜乐客户8开头
+	 * 喜乐3开头
+	 * 喜乐客户7开头
 	 * @param barCode
 	 * @return
 	 */
@@ -803,7 +803,7 @@ public class ProductBarcodeService {
 			prefix = new StringBuffer("3");
 		else 
 		//连锁店条码
-			prefix = new StringBuffer("9");
+			prefix = new StringBuffer("7");
 
 		String productIdS = String.valueOf(sequenceId);
 		int prefixLength = 11 - productIdS.length();

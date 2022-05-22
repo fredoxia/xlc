@@ -142,7 +142,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		
 		if (response.getReturnCode() != Response.SUCCESS){
 			addActionError(response.getMessage());
-			return postSubmitFlowOrder(false);
+			return postSubmitFlowOrder(response, false);
 		}else {
 			addActionMessage(response.getMessage());
 			int orerId = (Integer)response.getReturnValue();
@@ -171,7 +171,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		
 		if (response.getReturnCode() != Response.SUCCESS){
 			addActionError(response.getMessage());
-			return postSubmitFlowOrder(false);
+			return postSubmitFlowOrder(response, false);
 		}else {
 			addActionMessage(response.getMessage());
 			int orerId = (Integer)response.getReturnValue();
@@ -263,9 +263,10 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 	public String saveToDraft(){
 		ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
 		loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"saveToDraft : " + formBean.getFlowOrder().getId());
-    	
+		Response response = null;
 		try {
-		    flowOrderService.saveToDraft(formBean.getFlowOrder(),formBean.getInventory(), loginUser);
+		    
+		    response = flowOrderService.saveToDraft(formBean.getFlowOrder(),formBean.getInventory(), loginUser);
 			
 			addActionMessage("已经成功保存单据到草稿");
 		} catch (Exception e) {
@@ -275,7 +276,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 			addActionError("保存单据发生系统错误，请联系系统管理员");
 		}
 
-        return postSubmitFlowOrder(true);
+        return postSubmitFlowOrder(response, true);
 	}
 
 	/**
@@ -285,10 +286,10 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 	public String saveToFinal(){
 		ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
 		loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"saveToFinal");
-    	
+    	Response response = null;
 		try {
 			
-		    flowOrderService.saveToFinal(formBean.getFlowOrder(), loginUser);
+			response = flowOrderService.saveToFinal(formBean.getFlowOrder(), loginUser);
 			
 			addActionMessage("已经成功保存单据");
 		} catch (Exception e) {
@@ -298,7 +299,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 			addActionError("保存单据发生系统错误，请联系系统管理员");
 		}
 
-        return postSubmitFlowOrder(true);
+        return postSubmitFlowOrder(response, true);
 	}
 	
 	/**
@@ -347,7 +348,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
     		   Collections.sort(order.getProductList(), new ChainInveProductSort());
     		   
     		   return "displayInventoryReport";
-           } else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER)
+           } else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER ||orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER)
     		   return "displayInventoryTransferOrder";
              else
                return "displayFlowOrder";
@@ -357,7 +358,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
         	   flowOrderService.prepareCreateFlowOrderFormUIBean(loginUser, uiBean, formBean, order);
         	   
     		   return "editInventoryOrder";
-    	   } else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
+    	   } else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER||orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER){
     		   flowOrderService.prepareCreateInvenTransferOrderFormUIBean(loginUser, uiBean, formBean, order);
     		   return "editInventoryTransferOrder";    		   
     	   } else {
@@ -524,17 +525,17 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 			response.setQuickValue(Response.ERROR, response.getMessage());
 		}
 		
-		if (response.getReturnCode() == response.SUCCESS){
+		if (response.getReturnCode() == response.SUCCESS || response.getReturnCode() == response.WARNING){
 			List<ChainStore> chainStores = (List<ChainStore>)response.getReturnValue();
 			uiBean.setChainStores(chainStores);
 			
 			return "preGetCurrentInventory";
-		} else if (response.getReturnCode() == response.WARNING){
-			ChainStore chainStore = loginUser.getMyChainStore();
-			
-			formBean.setChainId(chainStore.getChain_id());
-			
-			return getLevelOneCurrentInventory();
+//		} else if (response.getReturnCode() == response.WARNING){
+//			ChainStore chainStore = loginUser.getMyChainStore();
+//			
+//			formBean.setChainId(chainStore.getChain_id());
+//			
+//			return getLevelOneCurrentInventory();
 		} else {
 			addActionError("发生错误 : " + response.getMessage());
 			return "preGetCurrentInventory";
@@ -657,7 +658,7 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 	}
 
 	/**
-	 * go to create 调货单 (inventory transfer order)
+	 * go to create 入库单 (inventory transfer order)
 	 * @return
 	 */
 	public String preCreateInventoryTransferOrder(){
@@ -682,21 +683,54 @@ public class ChainInventoryFlowJSPAction extends ChainInventoryFlowAction{
 		return "editInventoryTransferOrder";		
 	}
 	
-	private String postSubmitFlowOrder(boolean toFinalize){
+	/**
+	 * go to create 出库单 (inventory transfer out order)
+	 * @return
+	 */
+	public String preCreateInventoryTransferOutOrder(){
+		ChainUserInfor loginUser = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.chainActionInfo(loginUser,this.getClass().getName()+ "."+"preCreateInventoryTransferOutOrder");
+    	
+		ChainInventoryFlowOrder order = formBean.getFlowOrder();
+		
+		Response response = flowOrderService.prepareCreateInvenTransferOrderFormUIBean(loginUser, uiBean, formBean, order);
+		
+		if (!response.isSuccess()) {
+			addActionError(response.getMessage());
+			return ERROR;
+		}
+		
+		//prepare the 
+		ChainUtility.calculateParam(formBean, order);
+		
+		//set the order type
+		formBean.getFlowOrder().setType(ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER);
+		
+		return "editInventoryTransferOrder";		
+	}
+	
+	private String postSubmitFlowOrder(Response response, boolean toFinalize){
 		//clear the data
 		int orderType = formBean.getFlowOrder().getType();
 		
 		if (toFinalize)
 		    formBean.finalize();
 		
+		addActionMessage(response.getMessage());
+		
+		int orerId = (Integer)response.getReturnValue();
+		formBean.getFlowOrder().setId(orerId);
+		
 		if (orderType == ChainInventoryFlowOrder.OVER_FLOW_ORDER)
-		    return preCreateOverflowOrder();
+		    return loadOrder();
 		else if (orderType == ChainInventoryFlowOrder.FLOW_LOSS_ORDER)
-			return preCreateflowLossOrder();
+			return loadOrder();
 		else if (orderType == ChainInventoryFlowOrder.INVENTORY_ORDER)
-			return preCreateInventoryOrder();
+			return loadOrder();
 		else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER)
-			return preCreateInventoryTransferOrder();
+			return loadOrder();
+		else if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER)
+			return loadOrder();		
 		else
 			return ERROR;
 	}

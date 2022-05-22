@@ -62,6 +62,7 @@ public class HeadQCustMgmtService {
 		    custCriteria.addOrder(Order.asc(sort));
 		else 
 			custCriteria.addOrder(Order.desc(sort));
+		custCriteria.addOrder(Order.asc("id"));
 		List<HeadQCust> custs = headQCustDaoImpl.getByCritera(custCriteria, Common_util.getFirstRecord(page, rowPerPage), rowPerPage, true);
 		
 		dataMap.put("rows", custs);

@@ -19,8 +19,8 @@ public class ChainInventoryItemVO extends ChainReportItemVO {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ChainInventoryItemVO(String name, int inventory, double wholeSales,double retailSales, String state,int parentId,int chainId,  int yearId, int quarterId, int brandId, int pbId, boolean seeCost){
-		super(name, parentId,chainId, yearId, quarterId, brandId, pbId, state);
+	public ChainInventoryItemVO(String name, int inventory, double wholeSales,double retailSales, String state,int parentId,int chainId,  int yearId, int quarterId, int brandId, int pbId, boolean seeCost,int categoryId){
+		super(name, parentId,chainId, yearId, quarterId, brandId, pbId, state, categoryId);
 		this.setInventory(inventory);
 		this.setWholeSales(wholeSales);
 		this.setRetailSales(retailSales);

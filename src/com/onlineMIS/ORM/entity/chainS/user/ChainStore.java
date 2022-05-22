@@ -34,6 +34,7 @@ public class ChainStore implements Serializable {
 	static {
 		statusMap.put(STATUS_NOT_ACTIVE, "不活跃");
 		statusMap.put(STATUS_ACTIVE, "活跃");
+		statusMap.put(STATUS_DELETE, "停用");
 	}
 	private int chain_id;
 	private String chain_name;

@@ -39,12 +39,16 @@ $(document).ready(function(){
 		    },{
 				field : 'brand_Name',
 				title : '品牌名字',
-				width : 150
+				width : 120
 			},{			    
 			field : 'supplier',
 			title : '供应商',
-			width : 150
+			width : 100
 		    }, {
+				field : 'comment',
+				title : '商品备注',
+				width : 120
+			    }, {			    	
 			field : 'chain_name',
 			title : '所属',
 			width : 90,
@@ -89,7 +93,7 @@ function refresh(){
 </script>
 </head>
 <body>
-	<div class="easyui-layout" border="false" style="width:600px;height:560px">
+	<div class="easyui-layout" border="false" style="width:650px;height:560px">
 		<div data-options="region:'north',border:false" style="height: 40px;">
 			<%@ include file="ChooseBasicData.jsp"%>
 		</div>

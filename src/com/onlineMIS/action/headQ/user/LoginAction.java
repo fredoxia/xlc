@@ -73,7 +73,12 @@ public class LoginAction extends BaseAction{
 		String userName = user.getUser_name();
 		String password = user.getPassword();
 		
-		Response response = userInforService.validateUser(userName, password);
+		Response response = null;
+		try {
+		   response = userInforService.validateUser(userName, password);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		if (response.getReturnCode() == Response.SUCCESS){
 			UserInfor user = (UserInfor)response.getReturnValue();

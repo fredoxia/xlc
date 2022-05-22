@@ -42,6 +42,9 @@ function updateBrandBKProcess(data){
 	          <td>供货商         :</td><td><s:textfield id="supplier" name="formBean.brand.supplier"  cssClass="easyui-textbox" data-options="required:true,validType:['required','length[1,20]']"/></td>
 	       </tr>
 	       <tr class="InnerTableContent">
+	          <td>备注       :</td><td><s:textfield id="comment" name="formBean.brand.comment"  cssClass="easyui-textbox" data-options="required:true,validType:['required','length[1,12]']"/></td>
+	       </tr>	       
+	       <tr class="InnerTableContent">
 	          <td>所属         :</td><td><s:hidden name="formBean.brand.chainStore.chain_id"/>
 	                               <s:property value="formBean.brand.chainStore.chain_name"/></td>
 	       </tr>

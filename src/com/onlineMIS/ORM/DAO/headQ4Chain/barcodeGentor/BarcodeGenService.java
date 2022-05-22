@@ -188,7 +188,7 @@ public class BarcodeGenService {
 	    		product.setDiscount(1);
 	    	
 			productDaoImpl.save(product, true);
-			product.setSerialNum(String.valueOf(product.getProductId()));
+			product.setSerialNum(String.valueOf(product.getProductId()+50000000));
 			productDaoImpl.update(product, true);
 		} else {
 			product = productDaoImpl.getBySerialNum(serialNum, chainStore);

@@ -346,6 +346,7 @@ public class ChainInventoryFlowOrderService {
 		    
 		    save(flowOrder, loginUser);
 		    response.setReturnCode(Response.SUCCESS);
+		    response.setReturnValue(flowOrder.getId());
 		    response.setMessage("已经成功保存");
 		} else {
 		    response.setReturnCode(Response.FAIL);
@@ -421,8 +422,12 @@ public class ChainInventoryFlowOrderService {
     	       updateChainFlowOrderInOutStock(flowOrder, ChainStoreSalesOrder.STATUS_COMPLETE);
     	   } else if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){
     		   updateChainInvenTransferInOutStock(flowOrder, ChainStoreSalesOrder.STATUS_COMPLETE);
+    	       //@todo ---------------------------
+    	   } else if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER) {
+    		   updateChainInvenTransferInOutStock(flowOrder, ChainStoreSalesOrder.STATUS_COMPLETE); 
     	   }
 		   
+    	   response.setReturnValue(flowOrder.getId());
 		   response.setReturnCode(Response.SUCCESS);
 		   response.setMessage("已经成功保存");
 		} else {
@@ -452,7 +457,12 @@ public class ChainInventoryFlowOrderService {
 			return ;
 		}
 
-
+		int orderType = order.getType();
+		boolean in = true;
+		if (orderType == ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER)
+           in = false;
+		int offsetInOut = in ? 1 : -1;
+			
 		if (status == ChainInventoryFlowOrder.STATUS_CANCEL)
 			isCancel = true;
 		
@@ -468,7 +478,7 @@ public class ChainInventoryFlowOrderService {
 		 
 			 int productId = orderProduct.getProductBarcode().getId();
 			 String barcode = orderProduct.getProductBarcode().getBarcode();
-			 int quantity = orderProduct.getQuantity() * offset;
+			 int quantity = orderProduct.getQuantity() * offset * offsetInOut;
 			 
 			 /**
 			  * 1. 为from chain准备库存调出
@@ -521,8 +531,8 @@ public class ChainInventoryFlowOrderService {
 		    	   //   只有报溢单,报损单，调货单可以
 		    	   if (flowOrder.getType() == ChainInventoryFlowOrder.FLOW_LOSS_ORDER || flowOrder.getType() == ChainInventoryFlowOrder.OVER_FLOW_ORDER){
 		    	       updateChainFlowOrderInOutStock(flowOrder, ChainStoreSalesOrder.STATUS_CANCEL);
-		    	   } 
-		        	
+		    	   } else if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER || flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER)
+		    		   updateChainInvenTransferInOutStock(flowOrder, ChainStoreSalesOrder.STATUS_CANCEL);
 		           response.setReturnCode(Response.SUCCESS);
 		           response.setMessage("成功红冲单据");
 		       }
@@ -707,7 +717,7 @@ public class ChainInventoryFlowOrderService {
 		if (fromChainStore != null && fromChainStore.getChain_id() == 0)
 			flowOrder.setFromChainStore(null);
 			
-		if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER){		
+		if (flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_ORDER || flowOrder.getType() == ChainInventoryFlowOrder.INVENTORY_TRANSFER_OUT_ORDER){		
 			flowOrder.setChainStore(toChainStore);
 		}
 		
@@ -1711,7 +1721,7 @@ public class ChainInventoryFlowOrderService {
 	 * @param chainId
 	 * @return
 	 */
-	public Response deleteInventory(ChainUserInfor userInfor, int chainId, int yearId, int quarterId, int brandId) {
+	public Response deleteInventory(ChainUserInfor userInfor, int chainId, int yearId, int quarterId, int brandId, int categoryId, int pbId) {
 		Response response = new Response();
 		if (ChainUserInforService.isMgmtFromHQ(userInfor)){
 			ChainStore chainStore = chainStoreDaoImpl.get(chainId, true);
@@ -1719,7 +1729,7 @@ public class ChainInventoryFlowOrderService {
 			  int clientId = chainStore.getClient_id();
 			  StringBuffer deleteInventory = new StringBuffer("DELETE FROM ChainInOutStock AS his WHERE his.clientId = " + clientId);
 			  
-			  if (yearId != 0 || quarterId != 0 || brandId != 0){
+			  if (yearId != 0 || quarterId != 0 || brandId != 0 || categoryId != 0){
 				  if (yearId != 0){
 					  deleteInventory.append(" AND his.productBarcode.id IN (SELECT pb.id FROM ProductBarcode AS pb WHERE pb.product.year.year_ID=" + yearId);
 				  }
@@ -1728,6 +1738,12 @@ public class ChainInventoryFlowOrderService {
 				  }
 				  if (brandId != 0){
 					  deleteInventory.append(" AND pb.product.brand.brand_ID=" + brandId);
+				  }
+				  if (categoryId != 0){
+					  deleteInventory.append(" AND pb.product.category.category_ID=" + categoryId);
+				  }
+				  if (pbId != 0){
+					  deleteInventory.append(" AND pb.id=" + pbId);
 				  }
 				  
 				  deleteInventory.append(")");
@@ -1744,7 +1760,20 @@ public class ChainInventoryFlowOrderService {
 		return response;
 	}
 
-	public Response getChainInventory(int parentId, int chainId, int yearId, int quarterId, int brandId, ChainUserInfor loginUser, boolean skipZero) {
+	/**
+	 * 
+	 * @param parentId
+	 * @param chainId
+	 * @param yearId
+	 * @param quarterId
+	 * @param brandId
+	 * @param categoryId
+	 * @param rptTypeId 0 : brand, 1: category
+	 * @param loginUser
+	 * @param skipZero
+	 * @return
+	 */
+	public Response getChainInventory(int parentId, int chainId, int yearId, int quarterId, int brandId,int categoryId, int rptTypeId, ChainUserInfor loginUser, boolean skipZero) {
 		Response response = new Response();
 		List<ChainInventoryItemVO> chainInventoryVOs = new ArrayList<ChainInventoryItemVO>();
 		
@@ -1781,7 +1810,7 @@ public class ChainInventoryFlowOrderService {
 						double retailTotal = Common_util.getDouble(object2[1]);
 						int quantity = Common_util.getInt(object2[2]);
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(store.getChain_name(), quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 1,chainId, yearId, quarterId, brandId,0, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(store.getChain_name(), quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, 1,chainId, yearId, quarterId, brandId,0, showCost, categoryId);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1801,7 +1830,7 @@ public class ChainInventoryFlowOrderService {
 						
 						Year year = yearDaoImpl.get(yearIdDB, true);
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(year.getYear() + "年", quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, parentId,chainId, yearIdDB, quarterId, brandId,0, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(year.getYear() + "年", quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED, parentId,chainId, yearIdDB, quarterId, brandId,0, showCost, categoryId);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
@@ -1825,89 +1854,164 @@ public class ChainInventoryFlowOrderService {
 						
 						String name = year.getYear() + "年" + quarter.getQuarter_Name();
 						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId, chainId, yearId, quarterIdDB, brandId,0, showCost);
+						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId, chainId, yearId, quarterIdDB, brandId,0, showCost, categoryId);
 						chainInventoryVOs.add(headqInventoryVO);
 				}
 		    }
-		//使用categoryId
-		} else if (brandId == 0){
-			//@2. 展开所有品霞的库存信息
-			String hql = "SELECT his.productBarcode.product.category.category_ID, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? GROUP BY his.productBarcode.product.category.category_ID";
-			Object[] values = {yearId, quarterId};
-			
-			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
-			
-		    if (inventoryData != null){
-				for (Object object: inventoryData){
-						Object[] object2 = (Object[])object;
-						int brandIdDB = Common_util.getInt(object2[0]);
-						double costTotal = Common_util.getDouble(object2[1]);
-						double retailTotal = Common_util.getDouble(object2[2]);
-						int quantity = Common_util.getInt(object2[3]);
-						
-//						Brand brand = brandDaoImpl.get(brandIdDB, true);
-//						boolean isChain = false;
-//						if (brand.getChainStore() != null && brand.getChainStore().getChain_id() !=0)
-//							isChain = true;
-//						
-//						String name = "";
-//						String pinyin = brand.getPinyin();
-//						if (!StringUtils.isEmpty(pinyin)){
-//							name = pinyin.substring(0, 1) + " ";
-//						}
-//						
-//						 name += brand.getBrand_Name();
-						
-						Category catgory = categoryDaoImpl.get(brandIdDB, true);
-						String name = catgory.getCategory_Name();
-						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId,  chainId, yearId, quarterId, brandIdDB,0, showCost);
-						chainInventoryVOs.add(headqInventoryVO);
-				}
-		    }
-		} else if (brandId != 0) {
-			//@2. 展开当前品霞的库存信息
-			String hql = "SELECT his.productBarcode.id, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.category.category_ID=? GROUP BY his.productBarcode.id";
-			Object[] values = { yearId, quarterId, brandId};
-			
-			List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
-			
-		    if (inventoryData != null){
-				for (Object object: inventoryData){
-						Object[] object2 = (Object[])object;
-						int pbId = Common_util.getInt(object2[0]);
-						double costTotal = Common_util.getDouble(object2[1]);
-						double retailTotal = Common_util.getDouble(object2[2]);
-						int quantity = Common_util.getInt(object2[3]);
-						
-						if (quantity == 0 && skipZero)
-							continue;
-						
-						ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
-						Color color = pb.getColor();
-						String colorName = "";
-						if (color != null)
-							colorName = color.getName();
-						
-						Product product = pb.getProduct();
-						String gender = product.getGenderS();
-						String sizeRange = product.getSizeRangeS();
-						Brand brand = pb.getProduct().getBrand();
-						String name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName  + " " + gender + sizeRange +  brand.getBrand_Name();
+		
+		//使用categoryId 还是使用brandId
+		} else {
+			//by brand
+			if (rptTypeId == 1) {
+				if (brandId == 0){
+					//@2. 展开所有品霞的库存信息
+					String hql = "SELECT his.productBarcode.product.brand.brand_ID, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? GROUP BY his.productBarcode.product.brand.brand_ID";
+					Object[] values = {yearId, quarterId};
+					
+					List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
+					
+				    if (inventoryData != null){
+						for (Object object: inventoryData){
+								Object[] object2 = (Object[])object;
+								int brandIdDB = Common_util.getInt(object2[0]);
+								double costTotal = Common_util.getDouble(object2[1]);
+								double retailTotal = Common_util.getDouble(object2[2]);
+								int quantity = Common_util.getInt(object2[3]);
+								
+								Brand brand = brandDaoImpl.get(brandIdDB, true);
+								boolean isChain = false;
+								if (brand.getChainStore() != null && brand.getChainStore().getChain_id() !=0)
+									isChain = true;
+								
+								String name = "";
+								String pinyin = brand.getPinyin();
+								if (!StringUtils.isEmpty(pinyin)){
+									name = pinyin.substring(0, 1) + " ";
+								}
+								
+								 name += brand.getBrand_Name();
 
-						boolean isChain = false;
-						if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
-							isChain = true;
-						
-						String barcode = pb.getBarcode();
-						
-						ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, parentId,chainId, yearId, quarterId, brandId,pbId, showCost);
-						headqInventoryVO.setBarcode(barcode);
-						chainInventoryVOs.add(headqInventoryVO);
-						headqInventoryVO.setIsChain(isChain);
+								
+								ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId,  chainId, yearId, quarterId, brandIdDB,0, showCost, categoryId);
+								chainInventoryVOs.add(headqInventoryVO);
+						}
+				    }
+				} else if (brandId != 0) {
+					//@2. 展开当前品霞的库存信息
+					String hql = "SELECT his.productBarcode.id, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.brand.brand_ID=? GROUP BY his.productBarcode.id";
+					Object[] values = { yearId, quarterId, brandId};
+					
+					List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
+					
+				    if (inventoryData != null){
+						for (Object object: inventoryData){
+								Object[] object2 = (Object[])object;
+								int pbId = Common_util.getInt(object2[0]);
+								double costTotal = Common_util.getDouble(object2[1]);
+								double retailTotal = Common_util.getDouble(object2[2]);
+								int quantity = Common_util.getInt(object2[3]);
+								
+								if (quantity == 0 && skipZero)
+									continue;
+								
+								ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+								Color color = pb.getColor();
+								String colorName = "";
+								if (color != null)
+									colorName = color.getName();
+								
+								Product product = pb.getProduct();
+								String gender = product.getGenderS();
+								String sizeRange = product.getSizeRangeS();
+								Brand brand = pb.getProduct().getBrand();
+								String name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName  + " " + gender + sizeRange +  brand.getBrand_Name();
+
+								
+								boolean isChain = false;
+								if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
+									isChain = true;
+								
+								String barcode = pb.getBarcode();
+								
+								ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, parentId,chainId, yearId, quarterId, brandId,pbId, showCost, categoryId);
+								headqInventoryVO.setBarcode(barcode);
+								chainInventoryVOs.add(headqInventoryVO);
+								headqInventoryVO.setIsChain(isChain);
+						}
+				    }
 				}
-		    }
+			//by category
+			} else if (rptTypeId == 2) {
+				if (categoryId == 0){
+					//@2. 展开所有品霞的库存信息
+					String hql = "SELECT his.productBarcode.product.category.category_ID, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? GROUP BY his.productBarcode.product.category.category_ID";
+					Object[] values = {yearId, quarterId};
+					
+					List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
+					
+				    if (inventoryData != null){
+						for (Object object: inventoryData){
+								Object[] object2 = (Object[])object;
+								int categoryIdDB = Common_util.getInt(object2[0]);
+								double costTotal = Common_util.getDouble(object2[1]);
+								double retailTotal = Common_util.getDouble(object2[2]);
+								int quantity = Common_util.getInt(object2[3]);
+
+								
+								Category catgory = categoryDaoImpl.get(categoryIdDB, true);
+								String name = catgory.getCategory_Name();
+								
+								ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_CLOSED,parentId,  chainId, yearId, quarterId, brandId,0, showCost, categoryIdDB);
+								chainInventoryVOs.add(headqInventoryVO);
+						}
+				    }
+				} else if (categoryId != 0) {
+					//@2. 展开当前品霞的库存信息
+					String hql = "SELECT his.productBarcode.id, SUM(costTotal), SUM(chainSalePriceTotal), SUM(quantity) FROM ChainInOutStock AS his WHERE " +  whereClause +" AND his.productBarcode.product.year.year_ID=? AND his.productBarcode.product.quarter.quarter_ID=? AND his.productBarcode.product.category.category_ID=? GROUP BY his.productBarcode.id";
+					Object[] values = { yearId, quarterId, categoryId};
+					
+					List<Object> inventoryData = chainInOutStockDaoImpl.executeHQLSelect(hql, values, null, true);
+					
+				    if (inventoryData != null){
+						for (Object object: inventoryData){
+								Object[] object2 = (Object[])object;
+								int pbId = Common_util.getInt(object2[0]);
+								double costTotal = Common_util.getDouble(object2[1]);
+								double retailTotal = Common_util.getDouble(object2[2]);
+								int quantity = Common_util.getInt(object2[3]);
+								
+								if (quantity == 0 && skipZero)
+									continue;
+								
+								ProductBarcode pb = productBarcodeDaoImpl.get(pbId, true);
+								Color color = pb.getColor();
+								String colorName = "";
+								if (color != null)
+									colorName = color.getName();
+								
+								Product product = pb.getProduct();
+								String gender = product.getGenderS();
+								String sizeRange = product.getSizeRangeS();
+								Brand brand = pb.getProduct().getBrand();
+								String name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName  + " " + gender + sizeRange +  brand.getBrand_Name();
+
+								boolean isChain = false;
+								if (pb.getChainStore() != null && pb.getChainStore().getChain_id() !=0)
+									isChain = true;
+								
+								String barcode = pb.getBarcode();
+								
+								ChainInventoryItemVO headqInventoryVO = new ChainInventoryItemVO(name, quantity, costTotal, retailTotal, ChainInventoryItemVO.STATE_OPEN, parentId,chainId, yearId, quarterId, brandId,pbId, showCost, categoryId);
+								headqInventoryVO.setBarcode(barcode);
+								chainInventoryVOs.add(headqInventoryVO);
+								headqInventoryVO.setIsChain(isChain);
+						}
+				    }
+			}
 		}
+			
+		}
+
 		Collections.sort(chainInventoryVOs, new ChainStatisticReportItemVOSorter());
 		response.setReturnValue(chainInventoryVOs);
 		return response;

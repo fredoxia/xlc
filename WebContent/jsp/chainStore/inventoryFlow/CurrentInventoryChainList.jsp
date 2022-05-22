@@ -20,12 +20,19 @@ pageNav.fn = function(page,totalPage){
     document.chainListForm.action="inventoryFlowJSPAction!preGetCurrentInventory";
     document.chainListForm.submit();
 };
-function getLevelOne(chainId){
+function getLevelOneByBrandId(chainId){
 	$.messager.progress({
 		title : '提示',
 		text : '数据处理中，请稍后....'
 	});
-	window.location.href = "inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.chainId=" + chainId;
+	window.location.href = "inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.rptTypeId=1&formBean.chainId=" + chainId;
+}
+function getLevelOneByCategoryId(chainId){
+	$.messager.progress({
+		title : '提示',
+		text : '数据处理中，请稍后....'
+	});
+	window.location.href = "inventoryFlowJSPAction!getLevelOneCurrentInventory?formBean.rptTypeId=2&formBean.chainId=" + chainId;
 }
 
 </script>
@@ -50,7 +57,8 @@ function getLevelOne(chainId){
 					    <th width="30"></th>
 					    <th width="160">连锁店名称</th>
 					    <th width="160">连锁店经营者</th>
-					    <th></th>
+					    <th>品牌报表</th>
+					    <th>类别报表</th>
 					  </tr>
 				      <s:iterator value="uiBean.chainStores" status="st" id="chainStore" >
 						    <tr class="InnerTableContent" <s:if test="#st.even">style='background-color: rgb(255, 250, 208);'</s:if>>	      
@@ -58,18 +66,17 @@ function getLevelOne(chainId){
 						      <td><s:property value="#chainStore.pinYin.substring(0,1) "/></td>
 						      <td><s:property value="#chainStore.chain_name"/></td>
 						      <td><s:property value="#chainStore.owner_name"/></td>
-						      <td><a href='javascript:getLevelOne(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a>&nbsp;&nbsp; 
-						          
-						      </td>
+						      <td><a href='javascript:getLevelOneByBrandId(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a>&nbsp;&nbsp;  </td>
+						      <td><a href='javascript:getLevelOneByCategoryId(<s:property value="#chainStore.chain_id"/>)'><img src='<%=request.getContextPath()%>/conf_files/web-image/editor.gif' border='0'/></a>&nbsp;&nbsp;  </td>
 						    </tr>
 				       </s:iterator>	
 				       <s:if test="uiBean.chainStores.size == 0">
 						    <tr class="InnerTableContent">	      
-						      <td colspan="5">没有记录</td>
+						      <td colspan="6">没有记录</td>
 						     </tr>				       
 				       </s:if><s:else>
 						    <tr class="InnerTableContent">	      
-						      <td colspan="5"><div id="pageNav"></div></td>
+						      <td colspan="6"><div id="pageNav"></div></td>
 						    </tr>					       
 				       </s:else>  
 					</table></td>

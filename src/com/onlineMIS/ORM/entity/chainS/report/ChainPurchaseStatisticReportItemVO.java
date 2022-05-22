@@ -40,7 +40,7 @@ public class ChainPurchaseStatisticReportItemVO  extends ChainReportItemVO  {
 	}
 	
 	public ChainPurchaseStatisticReportItemVO(String name, int parentId, int chainId, int yearId, int quarterId, int brandId, int pbId, boolean seeCost, String state){
-		super(name, parentId, chainId, yearId, quarterId, brandId, pbId, state);
+		super(name, parentId, chainId, yearId, quarterId, brandId, pbId, state,0);
 		this.setSeeCost(seeCost);
 	}
 

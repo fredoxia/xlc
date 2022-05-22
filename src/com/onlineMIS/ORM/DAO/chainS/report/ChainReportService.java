@@ -2455,7 +2455,7 @@ public class ChainReportService {
 		
 		Response salesResponse = getSalesStatisticReptEles(parentId, startDate, endDate, chainId, yearId, quarterId, brandId, Common_util.ALL_RECORD, userInfor);
 		Response purchaseResponse = getPurchaseStatisticReptEles(parentId, startDate, endDate, chainId, yearId, quarterId, brandId, userInfor);
-		Response inventoryResponse = chainInventoryFlowOrderService.getChainInventory(parentId, chainId, yearId, quarterId, brandId, userInfor, true);
+		Response inventoryResponse = chainInventoryFlowOrderService.getChainInventory(parentId, chainId, yearId, quarterId, brandId, -1, 1, userInfor, true);
 		
 		if (salesResponse.getReturnValue() != null){
 			salesStatisticReportItemVOs = (List<ChainSalesStatisticReportItemVO>) salesResponse.getReturnValue();

@@ -41,6 +41,8 @@ $(document).ready(function(){
 		    $("#yearId").val(node.yearId);
 			$("#quarterId").val(node.quarterId);
 			$("#brandId").val(node.brandId);
+			$("#categoryId").val(node.categoryId);
+			$("#pbId").val(node.pbId);
 			var params = $('#preGenReportForm').serialize();
 			$('#dataGrid').treegrid('options').url = 'inventoryFlowJSONAction!getInventoryFlowEles?' + params;
 		},
@@ -79,6 +81,8 @@ function refresh(){
     $("#yearId").val(0);
 	$("#quarterId").val(0);
 	$("#brandId").val(0);
+	$("#categoryId").val(0);
+	$("#pbId").val(0);
     document.preGenReportForm.action="inventoryFlowJSPAction!getLevelOneCurrentInventory";
     document.preGenReportForm.submit();
 }
@@ -97,6 +101,8 @@ function downloadInventory(){
 	    $("#yearId").val(node.yearId);
 		$("#quarterId").val(node.quarterId);
 		$("#brandId").val(node.brandId);
+		$("#categoryId").val(node.categoryId);
+		$("#pbId").val(node.pbId);
         document.preGenReportForm.action="inventoryFlowJSPAction!generateChainInventoryExcelReport";
         document.preGenReportForm.submit();
 	}
@@ -120,7 +126,9 @@ function deleteInventory(){
 				    $("#yearId").val(node.yearId);
 					$("#quarterId").val(node.quarterId);
 					$("#brandId").val(node.brandId);
-			        
+					$("#categoryId").val(node.categoryId);
+					$("#pbId").val(node.pbId);
+                    
 					var params = $('#preGenReportForm').serialize();
 					$.post('inventoryFlowJSONAction!deleteInventory', params, 
 							function(result) {
@@ -155,6 +163,9 @@ function deleteInventory(){
             <input type="hidden" name="formBean.yearId" id="yearId" value="0"/>
             <input type="hidden" name="formBean.quarterId" id="quarterId" value="0"/>
             <input type="hidden" name="formBean.brandId" id="brandId" value="0"/>
+            <input type="hidden" name="formBean.categoryId" id="categoryId" value="0"/>
+            <input type="hidden" name="formBean.pbId" id="pbId" value="0"/>
+            <s:hidden name="formBean.rptTypeId" id="rptTypeId"/>
         </s:form>
         </div>
 		<div data-options="region:'center',border:false">

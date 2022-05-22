@@ -39,13 +39,45 @@ public class ChainInventoryFlowFormBean extends ChainActionFormBaseBean{
 	private String fileName;
 	
 	//for the current inventory
+	/**
+	 * 1: by brandId
+	 * 2: by categoryId
+	 */
+	private int rptTypeId;
 	private int yearId;
 	private int quarterId;
 	private int brandId;
+	private int categoryId;
+	private int pbId;
 	
 	//for the chain inventory excle report
 	private int parentId;
 	
+	
+	public int getPbId() {
+		return pbId;
+	}
+
+	public void setPbId(int pbId) {
+		this.pbId = pbId;
+	}
+
+	public int getRptTypeId() {
+		return rptTypeId;
+	}
+
+	public void setRptTypeId(int rptTypeId) {
+		this.rptTypeId = rptTypeId;
+	}
+
+	public int getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
+
 	public ChainStore getChainStore() {
 		return chainStore;
 	}

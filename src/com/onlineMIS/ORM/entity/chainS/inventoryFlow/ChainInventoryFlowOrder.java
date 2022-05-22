@@ -24,11 +24,14 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 	 * 1. overflow order 报溢单, value=1 (电脑是4，实际是5 -> 报溢单添加到电脑)
 	 * 2. flowloss order 报损单, value=2 (电脑时4，实际是3 -> 报损单在电脑存储减除)
 	 * 3. inventory order 库存单， value=3
+	 * 4. 入库单
+	 * 5. 出库单
 	 */
 	public final static int OVER_FLOW_ORDER = 1;
 	public final static int FLOW_LOSS_ORDER = 2;
 	public final static int INVENTORY_ORDER = 3;
 	public final static int INVENTORY_TRANSFER_ORDER = 4;
+	public final static int INVENTORY_TRANSFER_OUT_ORDER = 5;
 
 	/**
 	 * 
@@ -39,6 +42,7 @@ public class ChainInventoryFlowOrder extends BaseOrder {
 		typeChainMap.put(FLOW_LOSS_ORDER, "连锁店报损单据");
 		typeChainMap.put(INVENTORY_ORDER, "连锁店库存单据");
 		typeChainMap.put(INVENTORY_TRANSFER_ORDER, "入库单据");
+		typeChainMap.put(INVENTORY_TRANSFER_OUT_ORDER, "出库单据");
 	}
 	
 	private int id;

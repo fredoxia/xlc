@@ -214,7 +214,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
 		Response response = new Response();
 
 		try {
-		    response = flowOrderService.getChainInventory(formBean.getParentId(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(),userInfor, false);
+		    response = flowOrderService.getChainInventory(formBean.getParentId(), formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(), formBean.getCategoryId(), formBean.getRptTypeId(), userInfor, false);
 		} catch (Exception e){
 			e.printStackTrace();
 		}	
@@ -239,7 +239,7 @@ public class ChainInventoryFlowJSONAction extends ChainInventoryFlowAction{
     	
 		Response response = new Response();
 		try{
-		    response = flowOrderService.deleteInventory(userInfor,formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId());
+		    response = flowOrderService.deleteInventory(userInfor,formBean.getChainId(), formBean.getYearId(), formBean.getQuarterId(), formBean.getBrandId(), formBean.getCategoryId(), formBean.getPbId());
 		} catch (Exception e) {
 			loggerLocal.error(e);
 			response.setQuickValue(Response.FAIL, e.getMessage());

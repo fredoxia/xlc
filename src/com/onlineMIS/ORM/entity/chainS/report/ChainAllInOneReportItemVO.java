@@ -30,7 +30,8 @@ public class ChainAllInOneReportItemVO extends ChainReportItemVO {
 	}	
 	
 	public ChainAllInOneReportItemVO(String name, int parentId,int chainId, int yearId, int quarterId, int brandId, int pbId, String state,ChainSalesStatisticReportItemVO sales, ChainPurchaseStatisticReportItemVO purchase, ChainInventoryItemVO inventory){
-		super(name, parentId, chainId, yearId, quarterId, brandId,pbId, state);
+		//0 is the categoryId in allInOceReportItem
+		super(name, parentId, chainId, yearId, quarterId, brandId,pbId, state,0);
 
 		if (sales != null){
 			this.setSalesQ(sales.getSalesQ());

@@ -774,7 +774,7 @@ public class Common_util {
 
 	public static void main(String[] args){
 		Date date = Common_util.getToday();
-		System.out.println(Common_util.getLastUpdateTimeInterval());
+		System.out.println(Common_util.formatSerialNum("20056"));
 	}
 
 	public static Object correctFileName(String custName) {
@@ -785,6 +785,13 @@ public class Common_util {
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.HOUR, -1);
 		return calendar.getTime();
+	}
+
+	public static String formatSerialNum(String serialNum) {
+		for (int i =serialNum.length(); i< 8 ; i++) {
+			serialNum = "9" + serialNum;
+		}
+		return serialNum;
 	}
 	
 

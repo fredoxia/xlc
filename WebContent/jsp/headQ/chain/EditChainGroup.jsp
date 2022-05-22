@@ -44,9 +44,10 @@ function backProcessGetChainGroup(data){
 		$("#chainGroupName").attr("readonly","readonly");
 		$("input[name='formBean.chainStoreIds']").attr("checked",false);
 		var chainEles = chainGroup.chainStoreGroupElementSet;
+
 		for (var i = 0; i < chainEles.length; i++){
 	        var chainId = chainEles[i].chainId;
-	        $("#chain"+chainId).attr("checked",true);
+	        $("#chain"+chainId).prop("checked",true);
 		}
 	}
 	

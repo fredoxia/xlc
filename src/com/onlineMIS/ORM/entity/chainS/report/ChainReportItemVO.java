@@ -18,6 +18,7 @@ public class ChainReportItemVO implements Serializable{
 	private int yearId;
 	private int quarterId;
 	private int brandId;
+	private int categoryId;
 	private int pbId;
 	private String state;
 	private String name;
@@ -31,7 +32,7 @@ public class ChainReportItemVO implements Serializable{
 	public ChainReportItemVO(){
 		
 	}
-	public ChainReportItemVO(String name, int parentId, int chainId, int yearId, int quarterId, int brandId, int pbId, String state){
+	public ChainReportItemVO(String name, int parentId, int chainId, int yearId, int quarterId, int brandId, int pbId, String state, int categoryId){
 		super();
 		this.setId(Common_util.getUUID());
 		this.setName(name);
@@ -42,8 +43,15 @@ public class ChainReportItemVO implements Serializable{
 		this.setState(state);
 		this.setChainId(chainId);
 		this.setPbId(pbId);
+		this.setCategoryId(categoryId);
 	}
 	
+	public int getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
 	public String getBarcode() {
 		return barcode;
 	}

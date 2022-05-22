@@ -42,7 +42,7 @@ function downloadOrder(){
 				         </td>
 			           </tr>
 				       <tr class="InnerTableContent">
-				         <td width="200" height="32">调入:<s:select id="toChainStore" name="formBean.flowOrder.toChainStore.chain_id"  list="uiBean.toChainStores" listKey="chain_id" listValue="chain_name" onchange="validateTransferOrderForm();"/></td>
+				         <td width="200" height="32">连锁店2:<s:select id="toChainStore" name="formBean.flowOrder.toChainStore.chain_id"  list="uiBean.toChainStores" listKey="chain_id" listValue="chain_name" onchange="validateTransferOrderForm();"/></td>
 				         <td width="160">创建人:<s:property value="formBean.flowOrder.creator.name"/></td>
 				         <td width="160">日期:<s:property value="formBean.flowOrder.orderDate"/></td>
 				         <td width="200">状态:<s:property value="formBean.flowOrder.statusS"/></td>
@@ -130,6 +130,10 @@ function downloadOrder(){
 					         <td height="40">备注</td>
 					         <td colspan="2"><textarea name="formBean.flowOrder.comment" id="comment" rows="2" cols="50"><s:property value="formBean.flowOrder.comment"/></textarea></td>
 				           </tr>
+				          <tr class="InnerTableContent">
+					         <td height="40">文件</td>
+					         <td colspan="2"><input type="file" name="formBean.inventory" id="inventory"/></td>
+				           </tr>				           
 						   <tr class="InnerTableContent">
 						    <td width="3%" height="25" align='left'>&nbsp;</td>
 						    <td width="3%" align='left'>&nbsp;</td>

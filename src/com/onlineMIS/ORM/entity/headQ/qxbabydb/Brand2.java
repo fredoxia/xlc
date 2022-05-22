@@ -26,10 +26,17 @@ public class Brand2  implements Serializable{
     private String supplier;
     private String pinyin;
     private Integer chain_id ;
+    private String comment = "";
 
-	
- 	
- 	public Integer getChain_id() {
+ 	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public Integer getChain_id() {
 		return chain_id;
 	}
 

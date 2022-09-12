@@ -34,7 +34,8 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 	protected double freeCost = 0;
 	//净利润
 	protected double netProfit = 0;
-
+	
+	protected String date = "";
 	
 	
 	public ChainSalesStatisticReportItemVO(String name, int parentId, int chainId, int yearId, int quarterId, int brandId, int pbId, boolean seeCost, String state){
@@ -43,6 +44,14 @@ public class ChainSalesStatisticReportItemVO extends ChainReportItemVO{
 
 	}
 	
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
 	public int getSalesQ() {
 		return salesQ;
 	}

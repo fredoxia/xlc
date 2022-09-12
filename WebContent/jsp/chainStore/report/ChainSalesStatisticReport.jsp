@@ -12,10 +12,7 @@
 var baseurl = "<%=request.getContextPath()%>";
 $(document).ready(function(){
 	parent.$.messager.progress('close'); 
-	$.messager.progress({
-		title : '提示',
-		text : '数据处理中，请稍后....'
-	});
+
 	
 	var params= $.serializeObject($('#preGenReportForm'));
 	
@@ -45,7 +42,7 @@ $(document).ready(function(){
 			return style;
 		},
 		frozenColumns :[[					
-						{field:'name', width:220,title:' <s:property value="formBean.startDate"/>到1 <s:property value="formBean.endDate"/>',
+						{field:'name', width:250,title:' <s:property value="formBean.startDate"/>到 <s:property value="formBean.endDate"/>',
 							formatter: function (value, row, index){
 								if (row.state == 'open' && row.chainId != -1) {
 									var str = '';
@@ -137,6 +134,26 @@ function exportFile(){
 	}
 }
 
+function exportDetailFile(){
+	var node = $('#dataGrid').treegrid('getSelected');
+
+	if (node == null){
+		$.messager.alert('错误', '请先选中一行再继续操作', 'error');
+	} else {
+		$.messager.confirm('功能确认', '如果日期选择过长,此功能会下载大量数据，如果在繁忙时间可能会拖垮服务器.你确定继续?', function(r){
+			if (r){
+				$("#chainId").attr("value", node.chainId);
+			    $("#yearId").attr("value", node.yearId);
+				$("#quarterId").attr("value", node.quarterId);
+				$("#brandId").attr("value", node.brandId);
+		        document.preGenReportForm.action="chainReportJSPAction!generateChainSalesStatisticExcelDetailReport";
+		        document.preGenReportForm.submit();
+			}
+		});
+
+	}
+}
+
 </script>
 </head>
 <body>
@@ -160,6 +177,7 @@ function exportFile(){
 		             <a onclick="back();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">退回上页</a>
 		             <a onclick="refresh();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'">刷新库存</a>
 					<a onclick="exportFile();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">导出报表</a>
+					<a onclick="exportDetailFile();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">导出明晰报表</a>
 	             </div>
 		</div>
 	</div>					  

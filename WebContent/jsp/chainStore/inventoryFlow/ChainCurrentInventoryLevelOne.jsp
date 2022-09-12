@@ -47,7 +47,7 @@ $(document).ready(function(){
 			$('#dataGrid').treegrid('options').url = 'inventoryFlowJSONAction!getInventoryFlowEles?' + params;
 		},
 		frozenColumns :[[					
-					{field:'name', width:250,title:'库存列表',
+					{field:'name', width:280,title:'库存列表',
 						formatter: function (value, row, index){
 							if (row.state == 'open' && row.chainId != -1) {
 								var str = '';

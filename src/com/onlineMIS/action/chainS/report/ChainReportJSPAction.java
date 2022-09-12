@@ -35,6 +35,7 @@ public class ChainReportJSPAction extends ChainReportAction {
 	private static final long serialVersionUID = -2591790047835294824L;
 	private final String templateFileName = "ChainSalesReportTemplate.xls";
 	private final String CHAIN_SALES_STATISC_REPORT_TEMPLATENAME = "ChainSalesStatisticsReportTemplate.xls";
+	private final String CHAIN_SALES_STATISC_DETAIL_REPORT_TEMPLATENAME2007 = "ChainSalesStatisticsDetailReportTemplate2007.xlsx";
 	private String excelFileName = "XiaoShouBaoBiao.xls";
 	private InputStream excelStream;
 	
@@ -414,5 +415,35 @@ public class ChainReportJSPAction extends ChainReportAction {
 		    return "report"; 
 		} else 
 			return ERROR;	
+	}
+	
+	
+	/**
+	 * 生成销售统计报表明晰的excel格式
+	 * @return
+	 */
+	public String generateChainSalesStatisticExcelDetailReport(){
+		ChainUserInfor loginUserInfor = (ChainUserInfor)ActionContext.getContext().getSession().get(Common_util.LOGIN_CHAIN_USER);
+		loggerLocal.chainActionInfo(loginUserInfor,this.getClass().getName()+ "."+"generateChainSalesStatisticExcelDetailReport");
+
+		HttpServletRequest request = (HttpServletRequest)ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);   
+		String contextPath= request.getRealPath("/"); 
+
+		Response response = new Response();
+		try {
+			response = chainReportService.generateChainSalesStatisticExcelReportDetail(formBean.getParentId(),formBean.getChainStore().getChain_id(), formBean.getSaler().getUser_id(), formBean.getStartDate(), formBean.getEndDate(), formBean.getYear().getYear_ID(), formBean.getQuarter().getQuarter_ID(), formBean.getBrand().getBrand_ID(), loginUserInfor, contextPath + "WEB-INF\\template\\" + CHAIN_SALES_STATISC_DETAIL_REPORT_TEMPLATENAME2007);     
+		} catch (Exception e) {
+			loggerLocal.error(e);
+			response.setReturnCode(Response.FAIL);
+			response.setMessage(e.getMessage());
+		}
+ 
+		if (response.getReturnCode() == Response.SUCCESS){
+		    InputStream excelStream= (InputStream)response.getReturnValue();
+		    this.setExcelStream(excelStream);
+		    this.setExcelFileName("SalesStatisticExcelReport.xlsx");
+		    return "report"; 
+		} else 
+			return ERROR;		
 	}
 }

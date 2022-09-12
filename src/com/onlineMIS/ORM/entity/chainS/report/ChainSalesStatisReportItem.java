@@ -12,6 +12,7 @@ public class ChainSalesStatisReportItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 	protected Date startDate = new Date();
 	protected Date endDate = new Date();
+	protected String date = "";
 	protected ChainStore chainStore = new ChainStore();
 	protected ChainUserInfor saler = new ChainUserInfor();
 	private ProductBarcode productBarcode = new ProductBarcode();
@@ -61,6 +62,15 @@ public class ChainSalesStatisReportItem implements Serializable {
 		this.setSalesDiscount(vo.getSalesDiscount());
 		this.setSalesQ(vo.getSalesQ());
 		this.setSalesPrice(vo.getSalesPrice());
+		this.setDate(vo.getDate());
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 
 	public ProductBarcode getProductBarcode() {

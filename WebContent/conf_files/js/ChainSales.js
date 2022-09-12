@@ -167,7 +167,7 @@ function backRetrievePByBarcodeProcess(data){
  */
 function validateRowInput(index_trigger,suffix, currentBarcode){
 	if (currentBarcode.length != 12){
-		alert(currentBarcode + " 不是一个正常条形.请重新输入.");
+		$.messager.alert('失败警告',currentBarcode + " 不是一个正常条形.请重新输入.", 'error');
 		clearRowCells(index_trigger);
 		$("#barcode" + suffix +index_trigger).select();
 		return false;
@@ -223,7 +223,7 @@ function clearRowCells(index_c, suffix){
 	$("#dicountPrice"+suffix+index_c).attr("value",0); 
 	$("#discountAmount"+suffix+index_c).attr("value",0); 	
 	$("#memo"+suffix+index_c).attr("value",""); 
-	$("#barcode"+suffix+index_c).attr("value",""); 
+	$("#barcode"+suffix+index_c).val(""); 
 
 	calculateTotal();
 }

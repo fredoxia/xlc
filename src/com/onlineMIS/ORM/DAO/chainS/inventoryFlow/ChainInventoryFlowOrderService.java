@@ -1923,8 +1923,9 @@ public class ChainInventoryFlowOrderService {
 								Product product = pb.getProduct();
 								String gender = product.getGenderS();
 								String sizeRange = product.getSizeRangeS();
-								Brand brand = pb.getProduct().getBrand();
-								String name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName  + " " + gender + sizeRange +  brand.getBrand_Name();
+								Category catgory = categoryDaoImpl.get(product.getCategory().getCategory_ID(), true);
+
+								String name = Common_util.cutProductCode(pb.getProduct().getProductCode()) + colorName  + " " + gender + sizeRange +  catgory.getCategory_Name();
 
 								
 								boolean isChain = false;
